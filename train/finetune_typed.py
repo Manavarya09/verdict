@@ -77,7 +77,7 @@ def main():
         i = 0
         for r in split:
             qs = json.loads(r["questions"])
-            for qid, raw in qs.items():
+            for raw in qs.values():
                 q = jev_question_to_verdict(raw)
                 if q.kind == "choose":
                     rows[i]["_gold_idx"] = q.option_labels.index(rows[i]["gold"])
