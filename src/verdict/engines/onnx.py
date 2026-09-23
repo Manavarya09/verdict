@@ -40,16 +40,24 @@ class OnnxEmbedEngine(EmbedEngine):
         self.q_prefix, self.p_prefix = _prefixes_for(model)
         self._option_cache: dict[str, np.ndarray] = {}
         self.name = f"onnx:{model.split('/')[-1]}"
-        path = hf_hub_download(model, file)
-        # the quantized graph may reference external data next to it
-        with contextlib.suppress(Exception):
-            hf_hub_download(model, file + "_data")
+        from pathlib import Path
+
+        local = Path(model)
+        if local.is_dir():  # an exported checkpoint (train/export_onnx.py) or unpacked release
+            path = str(local / file)
+            tok_src = str(local / "tokenizer.json")
+        else:
+            path = hf_hub_download(model, file)
+            # the quantized graph may reference external data next to it
+            with contextlib.suppress(Exception):
+                hf_hub_download(model, file + "_data")
+            tok_src = None
         so = ort.SessionOptions()
         if threads:
             so.intra_op_num_threads = threads
         self.session = ort.InferenceSession(path, so, providers=["CPUExecutionProvider"])
         self.input_names = {i.name for i in self.session.get_inputs()}
-        self.tok = Tokenizer.from_pretrained(model)
+        self.tok = Tokenizer.from_file(tok_src) if tok_src else Tokenizer.from_pretrained(model)
         self.tok.enable_truncation(max_seq_length)
         self.tok.enable_padding(pad_id=self.tok.token_to_id("<pad>") or 0, pad_token="<pad>")
         self._dim: int | None = None
