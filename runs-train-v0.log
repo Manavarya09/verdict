@@ -37,3 +37,5 @@ step 500/8418 loss 1.1317 acc 0.601 lr 1.98e-05 1.12s/step eta 148m
 Repo card metadata block was not found. Setting CardData to empty.
 Writing model shards:   0%|          | 0/1 [00:00<?, ?it/s]Writing model shards: 100%|██████████| 1/1 [00:00<00:00,  1.79it/s]Writing model shards: 100%|██████████| 1/1 [00:00<00:00,  1.79it/s]
 EVAL step 500: {"banking77": 0.552, "sst5": 0.37, "toxic_chat": 0.7635, "mean": 0.5618}  <- best
+step 550/8418 loss 1.0055 acc 0.634 lr 1.97e-05 1.21s/step eta 159m
+step 600/8418 loss 0.9406 acc 0.651 lr 1.95e-05 1.19s/step eta 155m
