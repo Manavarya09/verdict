@@ -2,7 +2,7 @@
   {
     "suite": "toxic_chat",
     "shots": 0,
-    "engine": "embed:multilingual-e5-small",
+    "engine": "embed:multilingual-e5-small+nli:mDeBERTa-v3-base-xnli-multilingual-nli-2mil7",
     "fit_s": 0.0,
     "ms_per_example": 59.12,
     "n": 1000,
@@ -20,7 +20,7 @@
   {
     "suite": "sst5",
     "shots": 0,
-    "engine": "embed:multilingual-e5-small",
+    "engine": "embed:multilingual-e5-small+nli:mDeBERTa-v3-base-xnli-multilingual-nli-2mil7",
     "fit_s": 0.0,
     "ms_per_example": 97.66,
     "n": 1000,
@@ -36,7 +36,7 @@
   {
     "suite": "toxic_chat",
     "shots": 0,
-    "engine": "embed:multilingual-e5-small",
+    "engine": "embed:multilingual-e5-small+nli:deberta-v3-base-zeroshot-v2.0",
     "fit_s": 0.0,
     "ms_per_example": 127.3,
     "n": 1000,
@@ -54,7 +54,7 @@
   {
     "suite": "sst5",
     "shots": 0,
-    "engine": "embed:multilingual-e5-small",
+    "engine": "embed:multilingual-e5-small+nli:deberta-v3-base-zeroshot-v2.0",
     "fit_s": 0.0,
     "ms_per_example": 96.47,
     "n": 1000,

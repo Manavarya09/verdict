@@ -44,3 +44,4 @@ step 700/8418 loss 0.8772 acc 0.682 lr 1.93e-05 1.13s/step eta 146m
 step 750/8418 loss 0.8408 acc 0.713 lr 1.92e-05 1.12s/step eta 143m
 step 800/8418 loss 0.7625 acc 0.718 lr 1.90e-05 1.13s/step eta 143m
 step 850/8418 loss 0.9811 acc 0.665 lr 1.89e-05 1.13s/step eta 143m
+step 900/8418 loss 0.8765 acc 0.687 lr 1.88e-05 1.12s/step eta 141m

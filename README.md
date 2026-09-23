@@ -180,6 +180,9 @@ conformal threshold fit on that slice only; every number on the untouched test s
 | ToxicChat | 16 | AUROC 0.86 | 0.016 | 0.77 | | 2.8 |
 | ToxicChat | all (9,082) | **AUROC 0.955**, acc 0.936 | 0.011 | | | 2.3 |
 | Banking77, + `deberta-v3-base-zeroshot-v2.0` reranker (top-8) | 0 | **0.650** | 0.103 | 0.22 | 0.950 | ~30 |
+| SST-5, + `mDeBERTa-v3-base-xnli` reranker | 0 | 0.349 | | | | 98 |
+| ToxicChat, + `deberta-v3-base-zeroshot-v2.0` reranker | 0 | AUROC 0.69 | | | | 127 |
+| ToxicChat, + `mDeBERTa-v3-base-xnli` reranker | 0 | AUROC 0.46 | | | | 59 |
 
 Reference points from published evals: Jev zero-shot Banking77 0.80-0.87, CLINC150 0.87;
 Laya Banking77 0.425, SST-5 0.372, MASSIVE non-English mean 0.451, ToxicChat 0.755.
