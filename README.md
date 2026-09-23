@@ -87,6 +87,24 @@ d.save("support.verdict")                # one JSON file
 per class, a logistic head (initialised at the zero-shot solution, shrunk towards it) when
 you have more. Nothing is fine-tuned, so it is fast, deterministic and cheap to redo.
 
+## Distill your LLM's decisions
+
+Your router, judge or classifier has been logging `(input, answer)` for months. That is a
+training set.
+
+```bash
+verdict distill traces.jsonl support.verdict --coverage 0.9
+```
+
+```
+traces 12,400 · fit 8,680 · calibrate 2,480 · test 1,240
+agreement_with_llm 0.94 · agreement_when_committed 0.98 · automation_rate 0.81 · ece 0.02
+```
+
+Read: Verdict now answers 81% of that traffic itself, agreeing with the LLM 98% of the time
+on those, and escalates the rest. The question kind is inferred from the answers (labels,
+small integer range, or booleans) or given with `--question q.json`.
+
 ## Drop-in for Jev / Laya clients
 
 ```bash
