@@ -1,0 +1,47 @@
+[
+  {
+    "step": 0,
+    "eval": {
+      "banking77": 0.58,
+      "sst5": 0.294,
+      "toxic_chat": 0.5827,
+      "mean": 0.4856
+    }
+  },
+  {
+    "step": 500,
+    "eval": {
+      "banking77": 0.552,
+      "sst5": 0.37,
+      "toxic_chat": 0.7635,
+      "mean": 0.5618
+    }
+  },
+  {
+    "step": 1000,
+    "eval": {
+      "banking77": 0.56,
+      "sst5": 0.336,
+      "toxic_chat": 0.8233,
+      "mean": 0.5731
+    }
+  },
+  {
+    "step": 1500,
+    "eval": {
+      "banking77": 0.51,
+      "sst5": 0.404,
+      "toxic_chat": 0.8044,
+      "mean": 0.5728
+    }
+  },
+  {
+    "step": 2000,
+    "eval": {
+      "banking77": 0.524,
+      "sst5": 0.42,
+      "toxic_chat": 0.8365,
+      "mean": 0.5935
+    }
+  }
+]
