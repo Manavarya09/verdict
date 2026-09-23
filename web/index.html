@@ -1,0 +1,152 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Verdict playground</title>
+<style>
+  :root { --bg:#0b0d10; --fg:#e8e8e8; --muted:#8b93a1; --card:#14181d; --accent:#7cf0c8; --bar:#2a313a; }
+  @media (prefers-color-scheme: light) { :root { --bg:#fafafa; --fg:#111; --muted:#666; --card:#fff; --accent:#0a7a5a; --bar:#e5e7eb; } }
+  * { box-sizing: border-box; }
+  body { margin:0; background:var(--bg); color:var(--fg); font:15px/1.5 ui-sans-serif, system-ui, sans-serif; }
+  main { max-width: 860px; margin: 0 auto; padding: 24px 16px 64px; }
+  h1 { font-size: 22px; margin: 0 0 4px; }
+  p.sub { color: var(--muted); margin: 0 0 20px; }
+  .card { background: var(--card); border: 1px solid var(--bar); border-radius: 10px; padding: 16px; margin-bottom: 14px; }
+  label { display:block; font-size: 12px; color: var(--muted); margin-bottom: 4px; text-transform: uppercase; letter-spacing: .04em; }
+  textarea, input { width: 100%; background: transparent; color: var(--fg); border: 1px solid var(--bar); border-radius: 6px; padding: 8px 10px; font: inherit; }
+  textarea { min-height: 84px; resize: vertical; }
+  .row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  @media (max-width: 640px) { .row { grid-template-columns: 1fr; } }
+  button { background: var(--accent); color: #000; border: 0; border-radius: 6px; padding: 9px 16px; font: inherit; font-weight: 600; cursor: pointer; }
+  button:disabled { opacity: .5; cursor: default; }
+  .bar { height: 10px; background: var(--bar); border-radius: 5px; overflow: hidden; }
+  .bar > i { display: block; height: 100%; background: var(--accent); }
+  .opt { display: grid; grid-template-columns: 160px 1fr 60px; gap: 10px; align-items: center; margin: 6px 0; font-variant-numeric: tabular-nums; }
+  .status { color: var(--muted); font-size: 13px; }
+  code { background: var(--bar); padding: 1px 5px; border-radius: 4px; }
+  .badge { display:inline-block; padding: 2px 8px; border-radius: 999px; font-size: 12px; background: var(--bar); margin-left: 8px; }
+</style>
+</head>
+<body>
+<main>
+  <h1>Verdict playground <span class="badge" id="status">loading model…</span></h1>
+  <p class="sub">A 118M-parameter multilingual decision model running entirely in this tab. No server, no API key. Type any language.</p>
+
+  <div class="card">
+    <label for="state">Input</label>
+    <textarea id="state">Hi, we were billed twice for March. Please refund the duplicate today or we will cancel our plan.</textarea>
+  </div>
+
+  <div class="row">
+    <div class="card">
+      <label for="options">Choose: one option per line (<code>label: description</code>)</label>
+      <textarea id="options">billing: invoices, payments, refunds
+technical: bugs, outages, errors
+sales: pricing, new contracts
+other: everything else</textarea>
+    </div>
+    <div class="card">
+      <label for="claim">Check: a claim about the input</label>
+      <input id="claim" value="the customer threatens to cancel or leave">
+      <label for="scale" style="margin-top:12px">Score: rubric, one level per line (low to high)</label>
+      <textarea id="scale" style="min-height:60px">not urgent
+soon
+blocking issue or hard deadline</textarea>
+    </div>
+  </div>
+
+  <button id="run" disabled>Decide</button>
+  <span class="status" id="timing"></span>
+
+  <div class="card" id="out" hidden>
+    <div id="choose"></div>
+    <div id="check" style="margin-top:14px"></div>
+    <div id="score" style="margin-top:14px"></div>
+  </div>
+
+  <p class="status">Same maths as the Python package: cosine similarity between the input and each option, scaled by 20, softmax. Zero-shot probabilities here are uncalibrated; the Python package's <code>calibrate()</code> adds temperature scaling and a conformal abstain set.</p>
+</main>
+
+<script type="module">
+import { pipeline, env } from "https://cdn.jsdelivr.net/npm/@huggingface/transformers@3.5.2";
+env.allowLocalModels = false;
+
+const $ = (id) => document.getElementById(id);
+const SCALE = 20;
+let extractor;
+const cache = new Map();
+
+async function embed(texts, prefix) {
+  const out = [];
+  const todo = texts.filter((t) => !cache.has(prefix + t));
+  if (todo.length) {
+    const res = await extractor(todo.map((t) => prefix + t), { pooling: "mean", normalize: true });
+    const dim = res.dims[1];
+    todo.forEach((t, i) => cache.set(prefix + t, Array.from(res.data.slice(i * dim, (i + 1) * dim))));
+  }
+  for (const t of texts) out.push(cache.get(prefix + t));
+  return out;
+}
+const dot = (a, b) => a.reduce((s, x, i) => s + x * b[i], 0);
+function softmax(z) { const m = Math.max(...z); const e = z.map((x) => Math.exp(x - m)); const s = e.reduce((a, b) => a + b, 0); return e.map((x) => x / s); }
+function entropy(p) { return -p.reduce((s, x) => s + (x > 0 ? x * Math.log(x) : 0), 0) / Math.log(p.length); }
+
+function render(el, title, labels, probs, extra = "") {
+  const order = probs.map((p, i) => i).sort((a, b) => probs[b] - probs[a]);
+  el.innerHTML = `<label>${title}</label>` + order.map((i) =>
+    `<div class="opt"><span>${labels[i]}</span><div class="bar"><i style="width:${(probs[i] * 100).toFixed(1)}%"></i></div><span>${(probs[i] * 100).toFixed(1)}%</span></div>`
+  ).join("") + (extra ? `<div class="status">${extra}</div>` : "");
+}
+
+async function run() {
+  $("run").disabled = true;
+  const t0 = performance.now();
+  const state = $("state").value.trim();
+  const [x] = await embed([state], "query: ");
+
+  const opts = $("options").value.split("\n").map((l) => l.trim()).filter(Boolean).map((l) => {
+    const i = l.indexOf(":"); return i > 0 ? { label: l.slice(0, i).trim(), text: l.slice(i + 1).trim() } : { label: l, text: l.replace(/[_-]/g, " ") };
+  });
+  if (opts.length >= 2) {
+    const O = await embed(opts.map((o) => o.text), "passage: ");
+    const p = softmax(O.map((o) => dot(o, x) * SCALE));
+    const top = p.indexOf(Math.max(...p));
+    render($("choose"), "choose", opts.map((o) => o.label), p, `top: <b>${opts[top].label}</b> · margin ${(p[top] - [...p].sort((a, b) => b - a)[1]).toFixed(2)} · normalised entropy ${entropy(p).toFixed(2)}`);
+  }
+
+  const claim = $("claim").value.trim();
+  if (claim) {
+    const H = await embed([`It is false that ${claim}`, `It is true that ${claim}`], "passage: ");
+    const p = softmax(H.map((h) => dot(h, x) * SCALE));
+    render($("check"), "check", ["false", "true"], p, `P(true) = ${p[1].toFixed(3)}`);
+  }
+
+  const levels = $("scale").value.split("\n").map((l) => l.trim()).filter(Boolean);
+  if (levels.length >= 2) {
+    const L = await embed(levels, "passage: ");
+    const p = softmax(L.map((l) => dot(l, x) * SCALE));
+    const expected = p.reduce((s, v, i) => s + v * (i + 1), 0);
+    render($("score"), "score", levels.map((l, i) => `${i + 1} · ${l}`), p, `expected value ${expected.toFixed(2)} of ${levels.length}`);
+  }
+
+  $("out").hidden = false;
+  $("timing").textContent = `${(performance.now() - t0).toFixed(0)} ms (first run includes option embedding; repeats are cached)`;
+  $("run").disabled = false;
+}
+
+(async () => {
+  try {
+    extractor = await pipeline("feature-extraction", "Xenova/multilingual-e5-small", { dtype: "q8", device: navigator.gpu ? "webgpu" : "wasm",
+      progress_callback: (p) => { if (p.status === "progress") $("status").textContent = `downloading ${Math.round(p.progress || 0)}%`; } });
+    $("status").textContent = navigator.gpu ? "ready · WebGPU" : "ready · WASM";
+    $("run").disabled = false;
+    $("run").addEventListener("click", run);
+    run();
+  } catch (e) {
+    $("status").textContent = "failed to load: " + e.message;
+  }
+})();
+</script>
+</body>
+</html>

@@ -69,7 +69,7 @@ class Decider:
         engine: EmbedEngine,
         reranker: Engine | None = None,
         rerank_top_k: int = 8,
-        rerank_weight: float = 1.0,
+        rerank_weight: float = 4.0,
         coverage: float = 0.9,
     ):
         self.question = question
@@ -126,7 +126,9 @@ class Decider:
 
     def _rerank(self, Z: np.ndarray, inputs: Sequence[str]) -> np.ndarray:
         """Re-score the top-k options with the cross-encoder and fuse (z-scored sum).
-        Options outside the top-k keep their order but sit strictly below the reranked ones."""
+        Options outside the top-k keep their order but sit strictly below the reranked ones.
+        Measured on Banking77 zero-shot: the cross-encoder's own order beats any blend, so the
+        default weight (4.0) lets it dominate inside the top-k while the bi-encoder decides k."""
         Z = Z.copy()
         k = min(self.rerank_top_k, Z.shape[1])
         for i, text in enumerate(inputs):

@@ -48,20 +48,24 @@ def clinc150(n_test: int = 0):
     return q, train, calib, test[:n_test] if n_test else test
 
 
-def massive(lang: str = "en-US", n_test: int = 0):
+def massive(lang: str = "en", n_test: int = 0):
+    """MASSIVE intents (60 classes). ``lang`` is any of the 51 MASSIVE locales, e.g. "hi", "de", "zh-CN"."""
     from datasets import load_dataset
 
-    ds = load_dataset("AmazonScience/massive", lang)
-    names = ds["train"].features["intent"].names
-    labels = [n.replace("_", " ") for n in names]
+    ds = load_dataset("mteb/amazon_massive_intent", lang)
+    labels = sorted({l.replace("_", " ") for l in ds["train"]["label"]})
     q = Question(kind="choose", prompt="What does the user want?", options=options_from(labels))
 
     def rows(split):
-        return [(t, labels[i]) for t, i in zip(ds[split]["utt"], ds[split]["intent"])]
+        return [(t, l.replace("_", " ")) for t, l in zip(ds[split]["text"], ds[split]["label"])]
 
     train, calib = _split(rows("train"), 1000)
     test = rows("test")
     return q, train, calib, test[:n_test] if n_test else test
+
+
+def massive_hi(n_test: int = 0):
+    return massive("hi", n_test)
 
 
 def sst5(n_test: int = 0):
@@ -101,6 +105,7 @@ SUITES = {
     "banking77": banking77,
     "clinc150": clinc150,
     "massive": massive,
+    "massive_hi": massive_hi,
     "sst5": sst5,
     "toxic_chat": toxic_chat,
 }
