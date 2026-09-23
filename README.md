@@ -183,6 +183,8 @@ conformal threshold fit on that slice only; every number on the untouched test s
 | SST-5, + `mDeBERTa-v3-base-xnli` reranker | 0 | 0.349 | | | | 98 |
 | ToxicChat, + `deberta-v3-base-zeroshot-v2.0` reranker | 0 | AUROC 0.69 | | | | 127 |
 | ToxicChat, + `mDeBERTa-v3-base-xnli` reranker | 0 | AUROC 0.46 | | | | 59 |
+| Banking77, **ONNX int8, CPU only** | 0 | 0.604 | 0.062 | 0.10 | | 0.7 idle* |
+| Banking77, ONNX int8, CPU only | 16 | 0.858 | 0.030 | 0.74 | | 0.7 idle* |
 
 Reference points from published evals: Jev zero-shot Banking77 0.80-0.87, CLINC150 0.87;
 Laya Banking77 0.425, SST-5 0.372, MASSIVE non-English mean 0.451, ToxicChat 0.755.
@@ -192,6 +194,8 @@ the default bi-encoder** (SST-5 0.27, ToxicChat AUROC 0.59). A cross-encoder rer
 (`Verdict(reranker=...)`: Banking77 zero-shot 0.594 to 0.650, at ~30 ms instead of 0.6 ms);
 the trained-encoder track in [docs/PLAN.md](docs/PLAN.md) is the real answer. Sixteen labels
 per class fixes all of it, and the full ToxicChat train set reaches AUROC 0.955.
+
+\* ONNX rows were measured while a training run occupied the machine (16 ms/example then); 0.7 ms/example batched on an idle M5 CPU.
 
 \* zero-shot probabilities are uncalibrated by definition; `calibrate()` fixes ECE without
 changing accuracy. Apple M5, `intfloat/multilingual-e5-small`, batched.

@@ -45,3 +45,10 @@ step 750/8418 loss 0.8408 acc 0.713 lr 1.92e-05 1.12s/step eta 143m
 step 800/8418 loss 0.7625 acc 0.718 lr 1.90e-05 1.13s/step eta 143m
 step 850/8418 loss 0.9811 acc 0.665 lr 1.89e-05 1.13s/step eta 143m
 step 900/8418 loss 0.8765 acc 0.687 lr 1.88e-05 1.12s/step eta 141m
+step 950/8418 loss 0.8682 acc 0.700 lr 1.87e-05 1.14s/step eta 142m
+step 1000/8418 loss 0.8642 acc 0.693 lr 1.85e-05 1.14s/step eta 140m
+Writing model shards:   0%|          | 0/1 [00:00<?, ?it/s]Writing model shards: 100%|██████████| 1/1 [00:00<00:00,  2.42it/s]Writing model shards: 100%|██████████| 1/1 [00:00<00:00,  2.41it/s]
+Loading weights:   0%|          | 0/199 [00:00<?, ?it/s]Loading weights: 100%|██████████| 199/199 [00:00<00:00, 6150.87it/s]
+Repo card metadata block was not found. Setting CardData to empty.
+Writing model shards:   0%|          | 0/1 [00:00<?, ?it/s]Writing model shards: 100%|██████████| 1/1 [00:00<00:00,  5.85it/s]Writing model shards: 100%|██████████| 1/1 [00:00<00:00,  5.85it/s]
+EVAL step 1000: {"banking77": 0.56, "sst5": 0.336, "toxic_chat": 0.8233, "mean": 0.5731}  <- best
