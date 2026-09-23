@@ -36,3 +36,16 @@ jobs:
           uv pip install -e ".[dev,serve,bench]"
       - name: model tests
         run: uv run --no-sync pytest -m slow
+  sdk-ts:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: packages/verdict-js
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: npm ci || npm install
+      - run: npx tsc -p .
+      - run: npm test

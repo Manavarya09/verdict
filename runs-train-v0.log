@@ -34,3 +34,4 @@ step 450/8418 loss 1.0856 acc 0.642 lr 1.99e-05 1.12s/step eta 149m
 step 500/8418 loss 1.1317 acc 0.601 lr 1.98e-05 1.12s/step eta 148m
 Writing model shards:   0%|          | 0/1 [00:00<?, ?it/s]Writing model shards: 100%|██████████| 1/1 [00:00<00:00,  1.04it/s]Writing model shards: 100%|██████████| 1/1 [00:00<00:00,  1.03it/s]
 Loading weights:   0%|          | 0/199 [00:00<?, ?it/s]Loading weights: 100%|██████████| 199/199 [00:00<00:00, 5241.53it/s]
+Repo card metadata block was not found. Setting CardData to empty.
