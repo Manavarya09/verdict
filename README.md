@@ -127,14 +127,17 @@ conformal threshold fit on that slice only; every number on the untouched test s
 | SST-5 | all (7,544) | 0.462 | 0.029 | | | 1.2 |
 | ToxicChat (check, 7% positive) | 0 | AUROC 0.59 | | | | 2.7 |
 | ToxicChat | 16 | AUROC 0.86 | 0.016 | 0.77 | | 2.8 |
+| ToxicChat | all (9,082) | **AUROC 0.955**, acc 0.936 | 0.011 | | | 2.3 |
+| Banking77, + `deberta-v3-base-zeroshot-v2.0` reranker (top-8) | 0 | **0.650** | 0.103 | 0.22 | 0.950 | ~30 |
 
 Reference points from published evals: Jev zero-shot Banking77 0.80-0.87, CLINC150 0.87;
 Laya Banking77 0.425, SST-5 0.372, MASSIVE non-English mean 0.451, ToxicChat 0.755.
 
 Where we lose, in plain words: **zero-shot on `score` and `check` questions is weak with
-the default bi-encoder** (SST-5 0.27, ToxicChat AUROC 0.59). A cross-encoder reranker fixes
-most of it (`Verdict(reranker=...)`, numbers below); the trained-encoder track in
-[docs/PLAN.md](docs/PLAN.md) is the real answer. Sixteen labels per class fixes all of it.
+the default bi-encoder** (SST-5 0.27, ToxicChat AUROC 0.59). A cross-encoder reranker helps
+(`Verdict(reranker=...)`: Banking77 zero-shot 0.594 to 0.650, at ~30 ms instead of 0.6 ms);
+the trained-encoder track in [docs/PLAN.md](docs/PLAN.md) is the real answer. Sixteen labels
+per class fixes all of it, and the full ToxicChat train set reaches AUROC 0.955.
 
 \* zero-shot probabilities are uncalibrated by definition; `calibrate()` fixes ECE without
 changing accuracy. Apple M5, `intfloat/multilingual-e5-small`, batched.
