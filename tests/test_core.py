@@ -75,3 +75,12 @@ def test_batch_mixed_questions(v):
     )
     assert out[0].label == "sports" and out[1].label == "finance"
     assert hasattr(out[2], "verdict")
+
+
+@pytest.mark.slow
+def test_long_input_is_chunked_not_truncated(v):
+    filler = "The quarterly report discusses office supplies and parking arrangements. " * 120
+    tail = "Finally: the customer says they were charged twice and demands a refund immediately."
+    a = v.choose(filler + tail, {"billing": "refunds, invoices, charges", "facilities": "parking, office supplies"})
+    assert len(v.engine._chunks(filler + tail)) > 1
+    assert "billing" in a.ranked[:2]

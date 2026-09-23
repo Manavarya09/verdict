@@ -45,7 +45,7 @@ def batches_by_task(rows: list[Row], bs: int, seed: int):
 def encode(model: SentenceTransformer, texts: list[str], max_len: int) -> torch.Tensor:
     model.max_seq_length = max_len
     feats = model.tokenize(texts)
-    feats = {k: v.to(model.device) for k, v in feats.items()}
+    feats = {k: (v.to(model.device) if hasattr(v, "to") else v) for k, v in feats.items()}
     return F.normalize(model(feats)["sentence_embedding"], dim=-1)
 
 

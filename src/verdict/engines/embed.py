@@ -59,14 +59,38 @@ class EmbedEngine(Engine):
         self.name = f"embed:{model.split('/')[-1]}"
 
     # ---- embedding ------------------------------------------------------------
+    def _chunks(self, text: str) -> list[str]:
+        """Split a long input into windows that fit the encoder; short inputs pass through.
+        Windows overlap by ~10% so a decision-bearing sentence is not cut in half."""
+        limit = self.model.max_seq_length or 512
+        tok = self.model.tokenizer
+        ids = tok(text, add_special_tokens=False, truncation=False)["input_ids"]
+        budget = limit - 8
+        if len(ids) <= budget:
+            return [text]
+        step = int(budget * 0.9)
+        return [tok.decode(ids[i : i + budget]) for i in range(0, len(ids), step)]
+
     def embed_inputs(self, texts: list[str]) -> np.ndarray:
-        return self.model.encode(
-            [self.q_prefix + t for t in texts],
+        """Long inputs are chunked, embedded, mean-pooled and re-normalised, so a 20-page
+        document is one vector instead of a silently truncated one."""
+        chunked: list[str] = []
+        spans: list[tuple[int, int]] = []
+        for t in texts:
+            cs = self._chunks(t)
+            spans.append((len(chunked), len(chunked) + len(cs)))
+            chunked.extend(cs)
+        E = self.model.encode(
+            [self.q_prefix + t for t in chunked],
             batch_size=self.batch_size,
             normalize_embeddings=True,
             convert_to_numpy=True,
             show_progress_bar=False,
         )
+        if len(chunked) == len(texts):
+            return E
+        out = np.stack([E[a:b].mean(0) for a, b in spans])
+        return out / (np.linalg.norm(out, axis=1, keepdims=True) + 1e-9)
 
     def embed_options(self, texts: list[str]) -> np.ndarray:
         missing = [t for t in texts if t not in self._option_cache]

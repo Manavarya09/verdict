@@ -99,6 +99,24 @@ Then point any Jev, Laya or impossibl client at `http://localhost:8000/v1/system
 `abstain` flag. The native `POST /v1/decide` returns full `Choice` / `Score` / `Check`
 objects.
 
+## No PyTorch? Use the ONNX engine
+
+```bash
+pip install "verdictml[onnx]"
+```
+
+```python
+v = Verdict(engine="onnx")     # int8 weights from the Hub, ~120 MB, onnxruntime + tokenizers only
+```
+
+Same model, same numbers, 0.7 ms per example batched and under 2 ms single on a laptop CPU.
+These are the exact weights the browser playground runs.
+
+## Long inputs
+
+Inputs longer than the encoder window are chunked with overlap, embedded, mean-pooled and
+re-normalised. A twenty-page document becomes one vector instead of a silently truncated one.
+
 ## CLI
 
 ```bash

@@ -7,6 +7,8 @@ browser playground uses exactly these weights, so numbers match across Python an
 
 from __future__ import annotations
 
+import contextlib
+
 import numpy as np
 
 from .embed import EmbedEngine, _prefixes_for
@@ -40,10 +42,8 @@ class OnnxEmbedEngine(EmbedEngine):
         self.name = f"onnx:{model.split('/')[-1]}"
         path = hf_hub_download(model, file)
         # the quantized graph may reference external data next to it
-        try:
+        with contextlib.suppress(Exception):
             hf_hub_download(model, file + "_data")
-        except Exception:
-            pass
         so = ort.SessionOptions()
         if threads:
             so.intra_op_num_threads = threads

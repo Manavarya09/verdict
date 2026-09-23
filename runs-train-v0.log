@@ -2,93 +2,9 @@ device=mps base=intfloat/multilingual-e5-small
 building mix...
 Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
   clinc150             15000 rows
-Generating train split: 0 examples [00:00, ? examples/s]Generating train split: 11514 examples [00:00, 2179100.09 examples/s]
-Generating test split: 0 examples [00:00, ? examples/s]Generating test split: 2974 examples [00:00, 1099793.70 examples/s]
-Generating validation split: 0 examples [00:00, ? examples/s]Generating validation split: 2033 examples [00:00, 862884.03 examples/s]
-Generating train split: 0 examples [00:00, ? examples/s]Generating train split: 11514 examples [00:00, 2179886.98 examples/s]
-Generating test split: 0 examples [00:00, ? examples/s]Generating test split: 2974 examples [00:00, 1115530.33 examples/s]
-Generating validation split: 0 examples [00:00, ? examples/s]Generating validation split: 2033 examples [00:00, 837295.76 examples/s]
-Generating train split: 0 examples [00:00, ? examples/s]Generating train split: 11514 examples [00:00, 2159031.48 examples/s]
-Generating test split: 0 examples [00:00, ? examples/s]Generating test split: 2974 examples [00:00, 1126104.55 examples/s]
-Generating validation split: 0 examples [00:00, ? examples/s]Generating validation split: 2033 examples [00:00, 854239.63 examples/s]
-Generating train split: 0 examples [00:00, ? examples/s]Generating train split: 11514 examples [00:00, 2269738.04 examples/s]
-Generating test split: 0 examples [00:00, ? examples/s]Generating test split: 2974 examples [00:00, 1196303.84 examples/s]
-Generating validation split: 0 examples [00:00, ? examples/s]Generating validation split: 2033 examples [00:00, 868066.79 examples/s]
-Generating train split: 0 examples [00:00, ? examples/s]Generating train split: 11514 examples [00:00, 2535476.26 examples/s]
-Generating test split: 0 examples [00:00, ? examples/s]Generating test split: 2974 examples [00:00, 1073204.86 examples/s]
-Generating validation split: 0 examples [00:00, ? examples/s]Generating validation split: 2033 examples [00:00, 861054.23 examples/s]
-Generating train split: 0 examples [00:00, ? examples/s]Generating train split: 11514 examples [00:00, 1211084.77 examples/s]
-Generating test split: 0 examples [00:00, ? examples/s]Generating test split: 2974 examples [00:00, 1393727.39 examples/s]
-Generating validation split: 0 examples [00:00, ? examples/s]Generating validation split: 2033 examples [00:00, 1184143.87 examples/s]
-Generating train split: 0 examples [00:00, ? examples/s]Generating train split: 11514 examples [00:00, 2421562.27 examples/s]
-Generating test split: 0 examples [00:00, ? examples/s]Generating test split: 2974 examples [00:00, 1121951.80 examples/s]
-Generating validation split: 0 examples [00:00, ? examples/s]Generating validation split: 2033 examples [00:00, 903573.17 examples/s]
-Generating train split: 0 examples [00:00, ? examples/s]Generating train split: 11514 examples [00:00, 1048826.50 examples/s]
-Generating test split: 0 examples [00:00, ? examples/s]Generating test split: 2974 examples [00:00, 1376805.75 examples/s]
-Generating validation split: 0 examples [00:00, ? examples/s]Generating validation split: 2033 examples [00:00, 1118151.07 examples/s]
-Generating train split: 0 examples [00:00, ? examples/s]Generating train split: 11514 examples [00:00, 2262189.26 examples/s]
-Generating test split: 0 examples [00:00, ? examples/s]Generating test split: 2974 examples [00:00, 1154025.36 examples/s]
-Generating validation split: 0 examples [00:00, ? examples/s]Generating validation split: 2033 examples [00:00, 940860.65 examples/s]
-Generating train split: 0 examples [00:00, ? examples/s]Generating train split: 11514 examples [00:00, 2258169.66 examples/s]
-Generating test split: 0 examples [00:00, ? examples/s]Generating test split: 2974 examples [00:00, 1126511.34 examples/s]
-Generating validation split: 0 examples [00:00, ? examples/s]Generating validation split: 2033 examples [00:00, 878530.81 examples/s]
-Generating train split: 0 examples [00:00, ? examples/s]Generating train split: 11514 examples [00:00, 2330753.68 examples/s]
-Generating test split: 0 examples [00:00, ? examples/s]Generating test split: 2974 examples [00:00, 982193.71 examples/s]
-Generating validation split: 0 examples [00:00, ? examples/s]Generating validation split: 2033 examples [00:00, 890085.60 examples/s]
-Generating train split: 0 examples [00:00, ? examples/s]Generating train split: 11514 examples [00:00, 1070352.10 examples/s]
-Generating test split: 0 examples [00:00, ? examples/s]Generating test split: 2974 examples [00:00, 1362965.48 examples/s]
-Generating validation split: 0 examples [00:00, ? examples/s]Generating validation split: 2033 examples [00:00, 1109133.72 examples/s]
   massive              35000 rows
-Generating train split:   0%|          | 0/8954 [00:00<?, ? examples/s]Generating train split: 100%|██████████| 8954/8954 [00:00<00:00, 5390526.48 examples/s]
-Generating test split:   0%|          | 0/1076 [00:00<?, ? examples/s]Generating test split: 100%|██████████| 1076/1076 [00:00<00:00, 1591350.88 examples/s]
   hwu64              SKIPPED: AttributeError("'Value' object has no attribute 'names'")
-Generating train split:   0%|          | 0/13084 [00:00<?, ? examples/s]Generating train split: 100%|██████████| 13084/13084 [00:00<00:00, 6588028.04 examples/s]
-Generating test split:   0%|          | 0/1400 [00:00<?, ? examples/s]Generating test split: 100%|██████████| 1400/1400 [00:00<00:00, 2053155.80 examples/s]
   snips              SKIPPED: AttributeError("'Value' object has no attribute 'names'")
-Generating train split:   0%|          | 0/120000 [00:00<?, ? examples/s]Generating train split: 100%|██████████| 120000/120000 [00:00<00:00, 4478422.59 examples/s]
-Generating test split:   0%|          | 0/7600 [00:00<?, ? examples/s]Generating test split: 100%|██████████| 7600/7600 [00:00<00:00, 1795365.27 examples/s]
   ag_news               8000 rows
-Generating train split:   0%|          | 0/16000 [00:00<?, ? examples/s]Generating train split: 100%|██████████| 16000/16000 [00:00<00:00, 4827628.52 examples/s]
-Generating validation split:   0%|          | 0/2000 [00:00<?, ? examples/s]Generating validation split: 100%|██████████| 2000/2000 [00:00<00:00, 2277656.26 examples/s]
-Generating test split:   0%|          | 0/2000 [00:00<?, ? examples/s]Generating test split: 100%|██████████| 2000/2000 [00:00<00:00, 2677500.16 examples/s]
   emotion               8000 rows
   go_emotions           8000 rows
-  yelp                 10000 rows
-Generating train split:   0%|          | 0/49401 [00:00<?, ? examples/s]Generating train split: 100%|██████████| 49401/49401 [00:00<00:00, 2436418.93 examples/s]
-Generating test split:   0%|          | 0/8000 [00:00<?, ? examples/s]Generating test split: 100%|██████████| 8000/8000 [00:00<00:00, 2510244.03 examples/s]
-Generating validation split:   0%|          | 0/8000 [00:00<?, ? examples/s]Generating validation split: 100%|██████████| 8000/8000 [00:00<00:00, 2512499.59 examples/s]
-  paws                  8000 rows
-  aegis                12000 rows
-Generating train split:   0%|          | 0/1680 [00:00<?, ? examples/s]Generating train split: 100%|██████████| 1680/1680 [00:00<00:00, 214804.01 examples/s]
-  openai_moderation     1680 rows
-Generating train split:   0%|          | 0/11916 [00:00<?, ? examples/s]Generating train split: 100%|██████████| 11916/11916 [00:00<00:00, 1783001.91 examples/s]
-Generating test split:   0%|          | 0/860 [00:00<?, ? examples/s]Generating test split: 100%|██████████| 860/860 [00:00<00:00, 585473.37 examples/s]
-Generating validation split:   0%|          | 0/1324 [00:00<?, ? examples/s]Generating validation split: 100%|██████████| 1324/1324 [00:00<00:00, 822826.86 examples/s]
-  tweet_offensive       8000 rows
-  xnli                 15000 rows
-Generating train split:   0%|          | 0/200000 [00:00<?, ? examples/s]Generating train split:  64%|██████▍   | 128874/200000 [00:00<00:00, 851277.83 examples/s]Generating train split: 100%|██████████| 200000/200000 [00:00<00:00, 948833.44 examples/s]
-Generating validation split:   0%|          | 0/5000 [00:00<?, ? examples/s]Generating validation split: 100%|██████████| 5000/5000 [00:00<00:00, 2260592.86 examples/s]
-Generating test split:   0%|          | 0/5000 [00:00<?, ? examples/s]Generating test split: 100%|██████████| 5000/5000 [00:00<00:00, 2435716.61 examples/s]
-  amazon_reviews        6000 rows
-total 134680 rows
-Loading weights:   0%|          | 0/199 [00:00<?, ?it/s]Loading weights: 100%|██████████| 199/199 [00:00<00:00, 11199.67it/s]
-baseline held-out:
-Loading weights:   0%|          | 0/199 [00:00<?, ?it/s]Loading weights: 100%|██████████| 199/199 [00:00<00:00, 18805.57it/s]
-Repo card metadata block was not found. Setting CardData to empty.
-{"banking77": 0.58, "sst5": 0.294, "toxic_chat": 0.5827, "mean": 0.4856}
-The `tokenize` method is deprecated, please use `preprocess` instead.
-Traceback (most recent call last):
-  File "<frozen runpy>", line 198, in _run_module_as_main
-  File "<frozen runpy>", line 88, in _run_code
-  File "/Users/manavarya-intern/verdict/train/train.py", line 175, in <module>
-    main()
-  File "/Users/manavarya-intern/verdict/train/train.py", line 143, in main
-    loss, acc = step_loss(model, batch, q_prefix, p_prefix, a.max_len)
-                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/manavarya-intern/verdict/train/train.py", line 53, in step_loss
-    X = encode(model, [q_prefix + r.input for r in batch], max_len)
-        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/manavarya-intern/verdict/train/train.py", line 48, in encode
-    feats = {k: v.to(model.device) for k, v in feats.items()}
-                ^^^^
-AttributeError: 'str' object has no attribute 'to'
