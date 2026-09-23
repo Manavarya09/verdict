@@ -38,7 +38,8 @@ export class LocalVerdict {
 
   static async load(opts: LocalOptions = {}): Promise<LocalVerdict> {
     const model = opts.model ?? "Xenova/multilingual-e5-small";
-    const tf: any = await import("@huggingface/transformers");
+    const modName = "@huggingface/transformers"; // resolved at runtime; optional peer dependency
+    const tf: any = await import(/* @vite-ignore */ modName);
     const device = opts.device ?? (typeof navigator !== "undefined" && (navigator as any).gpu ? "webgpu" : "wasm");
     const extractor = (await tf.pipeline("feature-extraction", model, { dtype: opts.dtype ?? "q8", device })) as Extractor;
     const isE5 = /e5/i.test(model);
