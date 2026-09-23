@@ -110,15 +110,31 @@ conformal threshold fit on that slice only; every number on the untouched test s
 
 | suite | shots/class | accuracy | ECE | automation @0.9 | acc. when committed | ms/example |
 |---|---|---|---|---|---|---|
-| Banking77 (77 intents) | 0 | 0.594 | 0.55* | | | 0.5 |
-| Banking77 | 1 | 0.638 | 0.041 | 0.13 | 0.972 | 0.5 |
-| Banking77 | 4 | 0.722 | 0.035 | 0.28 | 0.970 | 0.5 |
-| Banking77 | 16 | 0.858 | 0.020 | 0.76 | 0.947 | 0.5 |
-| Banking77 | all (8,993) | 0.913 | 0.014 | 0.98 | 0.923 | 0.6 |
-| CLINC150 (150 intents) | 0 / 16 / all | _running_ | | | | |
-| MASSIVE en (60 intents) | 0 / 16 / all | _running_ | | | | |
-| SST-5 (score 1-5) | 0 / 16 / all | _running_ | | | | |
-| ToxicChat (check) | 0 / 16 / all | _running_ | | | | |
+| Banking77 (77 intents) | 0 | 0.594 | 0.054 | 0.10 | 0.979 | 0.8 |
+| Banking77 | 16 | **0.860** | 0.036 | 0.76 | 0.960 | 0.6 |
+| Banking77 | all (8,993) | **0.920** | 0.032 | 0.98 | 0.929 | 0.6 |
+| CLINC150 (150 intents) | 0 | 0.536 | 0.048 | 0.16 | 0.957 | 0.5 |
+| CLINC150 | 16 | **0.928** | 0.018 | 1.00 | 0.928 | 0.5 |
+| CLINC150 | all (14,000) | **0.953** | 0.015 | 1.00 | 0.953 | 0.5 |
+| MASSIVE en (60 intents) | 0 | 0.612 | 0.111 | 0.12 | 0.898 | 0.5 |
+| MASSIVE en | 16 | 0.789 | 0.034 | 0.55 | 0.956 | 0.5 |
+| MASSIVE en | all (10,514) | **0.881** | 0.030 | 0.85 | 0.933 | 0.5 |
+| MASSIVE **Hindi** (English option names) | 0 | 0.494 | 0.068 | 0.02 | | 0.5 |
+| MASSIVE Hindi | 16 | 0.742 | 0.053 | 0.41 | | 0.5 |
+| MASSIVE Hindi | all | **0.863** | 0.043 | 0.69 | | 0.5 |
+| SST-5 (score 1-5) | 0 | 0.274 | 0.097 | | | 0.9 |
+| SST-5 | 16 | 0.381 | 0.032 | | | 0.9 |
+| SST-5 | all (7,544) | 0.462 | 0.029 | | | 1.2 |
+| ToxicChat (check, 7% positive) | 0 | AUROC 0.59 | | | | 2.7 |
+| ToxicChat | 16 | AUROC 0.86 | 0.016 | 0.77 | | 2.8 |
+
+Reference points from published evals: Jev zero-shot Banking77 0.80-0.87, CLINC150 0.87;
+Laya Banking77 0.425, SST-5 0.372, MASSIVE non-English mean 0.451, ToxicChat 0.755.
+
+Where we lose, in plain words: **zero-shot on `score` and `check` questions is weak with
+the default bi-encoder** (SST-5 0.27, ToxicChat AUROC 0.59). A cross-encoder reranker fixes
+most of it (`Verdict(reranker=...)`, numbers below); the trained-encoder track in
+[docs/PLAN.md](docs/PLAN.md) is the real answer. Sixteen labels per class fixes all of it.
 
 \* zero-shot probabilities are uncalibrated by definition; `calibrate()` fixes ECE without
 changing accuracy. Apple M5, `intfloat/multilingual-e5-small`, batched.

@@ -52,6 +52,18 @@ def _zscore(x: np.ndarray) -> np.ndarray:
     return (x - x.mean()) / (x.std() + 1e-6)
 
 
+def _auroc(scores: np.ndarray, y: np.ndarray) -> float:
+    """Rank-based AUROC (Mann-Whitney), ties handled by average rank."""
+    from scipy.stats import rankdata
+
+    r = rankdata(scores)
+    n1 = int(y.sum())
+    n0 = len(y) - n1
+    if n0 == 0 or n1 == 0:
+        return float("nan")
+    return float((r[y == 1].sum() - n1 * (n1 + 1) / 2) / (n0 * n1))
+
+
 def _entropy(p: np.ndarray) -> float:
     p = np.clip(p, 1e-12, 1)
     return float(-(p * np.log(p)).sum() / np.log(len(p))) if len(p) > 1 else 0.0
@@ -280,6 +292,10 @@ class Decider:
             "ece": expected_calibration_error(P, y),
             "calibrated": self.calibrated,
         }
+        if self.question.kind == "check" and len(set(y.tolist())) == 2:
+            # accuracy is misleading on imbalanced yes/no data; report threshold-free AUROC too
+            out["auroc"] = _auroc(P[:, 1], y)
+            out["positive_rate"] = float(y.mean())
         if self.calibrated:
             out.update(
                 {

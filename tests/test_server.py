@@ -11,7 +11,9 @@ def test_jev_question_mapping():
     assert q.kind == "score" and q.scale == (0, 2)
     q = jev_question_to_verdict({"type": "noul", "instructions": "asks for a human?"})
     assert q.kind == "check"
-    with pytest.raises(Exception):
+    from fastapi import HTTPException
+
+    with pytest.raises(HTTPException):
         jev_question_to_verdict({"type": "choice", "criteria": {"only": None}})
 
 
