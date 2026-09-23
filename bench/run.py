@@ -43,7 +43,7 @@ def run_bench(suite: str, n: int = 1000, shots=(0, 16), model=None, reranker=Non
             t0 = time.perf_counter()
             ev = d.evaluate(test)
             ms = (time.perf_counter() - t0) * 1000 / len(test)
-            row = {"suite": name, "shots": s, "engine": v.engine.name, "fit_s": round(fit_s, 2), "ms_per_example": round(ms, 2), **ev}
+            row = {"suite": name, "shots": s, "engine": v.engine.name + (f"+{v.reranker.name}" if v.reranker else ""), "fit_s": round(fit_s, 2), "ms_per_example": round(ms, 2), **ev}
             print(json.dumps(row), flush=True)
             results.append(row)
     return results
