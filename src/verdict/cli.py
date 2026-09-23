@@ -100,6 +100,34 @@ def evaluate(
 
 
 @app.command()
+def distill(
+    traces: Path = typer.Argument(..., help="JSONL of your LLM's decisions: {input, answer}."),
+    out: Path = typer.Argument(..., help="Where to write the .verdict file."),
+    question: Path | None = typer.Option(None, help="Question JSON; inferred from the answers if omitted."),
+    coverage: float = typer.Option(0.9),
+    model: str | None = typer.Option(None),
+):
+    """Turn an LLM decision log into a Decider that agrees with it, in milliseconds."""
+    from .core import Verdict
+    from .distill import distill as _distill
+    from .distill import label_histogram, read_traces, suggest_question
+    from .types import Question
+
+    rows = read_traces(traces)
+    q = Question.model_validate_json(question.read_text()) if question else suggest_question(rows)
+    rprint(f"[bold]{len(rows)}[/bold] traces, labels: {label_histogram(rows)}")
+    v = Verdict(**({"model": model} if model else {}))
+    d, report = _distill(v, q, rows, coverage=coverage)
+    d.save(out)
+    t = Table(title=f"distilled -> {out}")
+    t.add_column("metric")
+    t.add_column("value")
+    for k, val in report.items():
+        t.add_row(k, f"{val:.4f}" if isinstance(val, float) else str(val))
+    rprint(t)
+
+
+@app.command()
 def serve(
     host: str = typer.Option("0.0.0.0"),
     port: int = typer.Option(8000),

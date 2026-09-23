@@ -8,3 +8,8 @@ Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF
   ag_news               8000 rows
   emotion               8000 rows
   go_emotions           8000 rows
+  yelp                 10000 rows
+  paws                  8000 rows
+  aegis                12000 rows
+  openai_moderation     1680 rows
+  tweet_offensive       8000 rows
