@@ -351,8 +351,14 @@ class Verdict:
         device: str | None = None,
         coverage: float = 0.9,
         rerank_top_k: int = 8,
+        engine: Literal["torch", "onnx"] = "torch",
     ):
-        self.engine = EmbedEngine(model=model, device=device)
+        if engine == "onnx":
+            from .engines.onnx import DEFAULT_ONNX_MODEL, OnnxEmbedEngine
+
+            self.engine = OnnxEmbedEngine(model=DEFAULT_ONNX_MODEL if model == DEFAULT_EMBED_MODEL else model)
+        else:
+            self.engine = EmbedEngine(model=model, device=device)
         self.reranker: Engine | None = None
         if reranker:
             from .engines.nli import NLIEngine

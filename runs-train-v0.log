@@ -65,3 +65,30 @@ Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF
 Generating test split:   0%|          | 0/860 [00:00<?, ? examples/s]Generating test split: 100%|██████████| 860/860 [00:00<00:00, 585473.37 examples/s]
 Generating validation split:   0%|          | 0/1324 [00:00<?, ? examples/s]Generating validation split: 100%|██████████| 1324/1324 [00:00<00:00, 822826.86 examples/s]
   tweet_offensive       8000 rows
+  xnli                 15000 rows
+Generating train split:   0%|          | 0/200000 [00:00<?, ? examples/s]Generating train split:  64%|██████▍   | 128874/200000 [00:00<00:00, 851277.83 examples/s]Generating train split: 100%|██████████| 200000/200000 [00:00<00:00, 948833.44 examples/s]
+Generating validation split:   0%|          | 0/5000 [00:00<?, ? examples/s]Generating validation split: 100%|██████████| 5000/5000 [00:00<00:00, 2260592.86 examples/s]
+Generating test split:   0%|          | 0/5000 [00:00<?, ? examples/s]Generating test split: 100%|██████████| 5000/5000 [00:00<00:00, 2435716.61 examples/s]
+  amazon_reviews        6000 rows
+total 134680 rows
+Loading weights:   0%|          | 0/199 [00:00<?, ?it/s]Loading weights: 100%|██████████| 199/199 [00:00<00:00, 11199.67it/s]
+baseline held-out:
+Loading weights:   0%|          | 0/199 [00:00<?, ?it/s]Loading weights: 100%|██████████| 199/199 [00:00<00:00, 18805.57it/s]
+Repo card metadata block was not found. Setting CardData to empty.
+{"banking77": 0.58, "sst5": 0.294, "toxic_chat": 0.5827, "mean": 0.4856}
+The `tokenize` method is deprecated, please use `preprocess` instead.
+Traceback (most recent call last):
+  File "<frozen runpy>", line 198, in _run_module_as_main
+  File "<frozen runpy>", line 88, in _run_code
+  File "/Users/manavarya-intern/verdict/train/train.py", line 175, in <module>
+    main()
+  File "/Users/manavarya-intern/verdict/train/train.py", line 143, in main
+    loss, acc = step_loss(model, batch, q_prefix, p_prefix, a.max_len)
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/manavarya-intern/verdict/train/train.py", line 53, in step_loss
+    X = encode(model, [q_prefix + r.input for r in batch], max_len)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/manavarya-intern/verdict/train/train.py", line 48, in encode
+    feats = {k: v.to(model.device) for k, v in feats.items()}
+                ^^^^
+AttributeError: 'str' object has no attribute 'to'
