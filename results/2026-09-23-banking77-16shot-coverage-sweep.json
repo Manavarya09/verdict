@@ -1,0 +1,42 @@
+{
+  "0.7": {
+    "automation": 1.0,
+    "acc_committed": 0.858,
+    "coverage_observed": 0.858
+  },
+  "0.75": {
+    "automation": 1.0,
+    "acc_committed": 0.858,
+    "coverage_observed": 0.858
+  },
+  "0.8": {
+    "automation": 0.992,
+    "acc_committed": 0.86,
+    "coverage_observed": 0.861
+  },
+  "0.85": {
+    "automation": 0.934,
+    "acc_committed": 0.877,
+    "coverage_observed": 0.877
+  },
+  "0.9": {
+    "automation": 0.759,
+    "acc_committed": 0.947,
+    "coverage_observed": 0.92
+  },
+  "0.95": {
+    "automation": 0.525,
+    "acc_committed": 0.987,
+    "coverage_observed": 0.965
+  },
+  "0.97": {
+    "automation": 0.405,
+    "acc_committed": 0.989,
+    "coverage_observed": 0.977
+  },
+  "0.99": {
+    "automation": 0.228,
+    "acc_committed": 0.993,
+    "coverage_observed": 0.99
+  }
+}

@@ -1,4 +1,11 @@
-<h1 align="center">verdict</h1>
+<p align="center"><img src="docs/assets/banner.svg" alt="verdict: small, fast, honest decision models" width="100%"></p>
+
+<p align="center">
+  <a href="https://github.com/Manavarya09/verdict/actions/workflows/ci.yml"><img src="https://github.com/Manavarya09/verdict/actions/workflows/ci.yml/badge.svg" alt="ci"></a>
+  <a href="LICENSE"><img src="https://img.shields.io/badge/license-Apache--2.0-blue.svg" alt="license"></a>
+  <a href="https://manavarya09.github.io/verdict/"><img src="https://img.shields.io/badge/demo-runs%20in%20your%20browser-6ee7c8" alt="demo"></a>
+</p>
+
 <p align="center"><b>Small, fast, honest decision models.</b><br>
 Replace LLM calls for routing, guardrails, triage and policy checks with typed answers in milliseconds, on a CPU, with a probability you can trust.</p>
 

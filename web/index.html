@@ -3,149 +3,327 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Verdict playground</title>
+<title>Verdict · small, fast, honest decision models</title>
+<meta name="description" content="Open-source decision model. Replace LLM calls for routing, guardrails and triage with typed answers in milliseconds, calibrated with a coverage guarantee. Runs in your browser.">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
-  :root { --bg:#0b0d10; --fg:#e8e8e8; --muted:#8b93a1; --card:#14181d; --accent:#7cf0c8; --bar:#2a313a; }
-  @media (prefers-color-scheme: light) { :root { --bg:#fafafa; --fg:#111; --muted:#666; --card:#fff; --accent:#0a7a5a; --bar:#e5e7eb; } }
-  * { box-sizing: border-box; }
-  body { margin:0; background:var(--bg); color:var(--fg); font:15px/1.5 ui-sans-serif, system-ui, sans-serif; }
-  main { max-width: 860px; margin: 0 auto; padding: 24px 16px 64px; }
-  h1 { font-size: 22px; margin: 0 0 4px; }
-  p.sub { color: var(--muted); margin: 0 0 20px; }
-  .card { background: var(--card); border: 1px solid var(--bar); border-radius: 10px; padding: 16px; margin-bottom: 14px; }
-  label { display:block; font-size: 12px; color: var(--muted); margin-bottom: 4px; text-transform: uppercase; letter-spacing: .04em; }
-  textarea, input { width: 100%; background: transparent; color: var(--fg); border: 1px solid var(--bar); border-radius: 6px; padding: 8px 10px; font: inherit; }
-  textarea { min-height: 84px; resize: vertical; }
-  .row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-  @media (max-width: 640px) { .row { grid-template-columns: 1fr; } }
-  button { background: var(--accent); color: #000; border: 0; border-radius: 6px; padding: 9px 16px; font: inherit; font-weight: 600; cursor: pointer; }
-  button:disabled { opacity: .5; cursor: default; }
-  .bar { height: 10px; background: var(--bar); border-radius: 5px; overflow: hidden; }
-  .bar > i { display: block; height: 100%; background: var(--accent); }
-  .opt { display: grid; grid-template-columns: 160px 1fr 60px; gap: 10px; align-items: center; margin: 6px 0; font-variant-numeric: tabular-nums; }
-  .status { color: var(--muted); font-size: 13px; }
-  code { background: var(--bar); padding: 1px 5px; border-radius: 4px; }
-  .badge { display:inline-block; padding: 2px 8px; border-radius: 999px; font-size: 12px; background: var(--bar); margin-left: 8px; }
+  :root {
+    --bg:#0a0c0f; --bg2:#101419; --fg:#eef1f4; --muted:#8f9aa8; --line:#1f2630; --card:#12171d;
+    --accent:#6ee7c8; --accent-2:#8ab4ff; --warn:#ffb86b; --bar:#1c232c; --shadow: 0 10px 40px rgba(0,0,0,.35);
+  }
+  :root[data-theme="light"], :root:not([data-theme="dark"]) { }
+  @media (prefers-color-scheme: light) { :root:not([data-theme="dark"]) {
+    --bg:#f7f8fa; --bg2:#ffffff; --fg:#0f1419; --muted:#5b6673; --line:#e4e8ee; --card:#ffffff; --accent:#0b8f6f; --accent-2:#2b63d9; --warn:#b45f06; --bar:#eaeef3; --shadow: 0 10px 40px rgba(20,30,50,.08);
+  } }
+  :root[data-theme="light"] { --bg:#f7f8fa; --bg2:#ffffff; --fg:#0f1419; --muted:#5b6673; --line:#e4e8ee; --card:#ffffff; --accent:#0b8f6f; --accent-2:#2b63d9; --warn:#b45f06; --bar:#eaeef3; --shadow: 0 10px 40px rgba(20,30,50,.08); }
+  * { box-sizing:border-box; }
+  html { scroll-behavior:smooth; }
+  body { margin:0; background:var(--bg); color:var(--fg); font:15px/1.55 Inter, ui-sans-serif, system-ui, sans-serif; -webkit-font-smoothing:antialiased; }
+  a { color:var(--accent-2); text-decoration:none; } a:hover { text-decoration:underline; }
+  code, pre, .mono { font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace; }
+  .wrap { max-width:1040px; margin:0 auto; padding:0 16px; }
+  nav { display:flex; align-items:center; justify-content:space-between; padding:18px 0; }
+  nav .brand { font-weight:700; letter-spacing:-.01em; font-size:18px; color:var(--fg); }
+  nav .links a { color:var(--muted); margin-left:18px; font-size:14px; }
+  .hero { padding:56px 0 28px; }
+  .hero h1 { font-size:clamp(30px, 5vw, 48px); line-height:1.08; letter-spacing:-.02em; margin:0 0 14px; font-weight:700; }
+  .hero h1 em { font-style:normal; color:var(--accent); }
+  .hero p.lead { font-size:18px; color:var(--muted); max-width:720px; margin:0 0 22px; }
+  .pill { display:inline-flex; align-items:center; gap:8px; border:1px solid var(--line); background:var(--bg2); border-radius:999px; padding:6px 12px; font-size:13px; color:var(--muted); }
+  .pill i { width:8px; height:8px; border-radius:50%; background:var(--warn); display:inline-block; }
+  .pill.ready i { background:var(--accent); }
+  .cta { display:flex; gap:10px; flex-wrap:wrap; margin-top:18px; }
+  .btn { display:inline-block; border-radius:8px; padding:10px 16px; font-weight:600; border:1px solid var(--line); background:var(--bg2); color:var(--fg); cursor:pointer; font:inherit; font-weight:600; }
+  .btn.primary { background:var(--accent); color:#04120e; border-color:transparent; }
+  .btn:disabled { opacity:.5; cursor:default; }
+  pre.snippet { background:var(--bg2); border:1px solid var(--line); border-radius:10px; padding:14px 16px; overflow:auto; font-size:13px; line-height:1.6; margin:22px 0 0; }
+  .grid { display:grid; grid-template-columns:1.2fr .8fr; gap:16px; }
+  @media (max-width: 820px) { .grid { grid-template-columns:1fr; } }
+  .card { background:var(--card); border:1px solid var(--line); border-radius:12px; padding:16px; box-shadow:var(--shadow); }
+  .card h3 { margin:0 0 10px; font-size:14px; text-transform:uppercase; letter-spacing:.06em; color:var(--muted); font-weight:600; }
+  label { display:block; font-size:12px; color:var(--muted); margin:10px 0 4px; }
+  textarea, input, select { width:100%; background:var(--bg); color:var(--fg); border:1px solid var(--line); border-radius:8px; padding:9px 11px; font:inherit; font-size:14px; }
+  textarea { min-height:96px; resize:vertical; }
+  textarea:focus, input:focus { outline:2px solid color-mix(in srgb, var(--accent) 45%, transparent); border-color:transparent; }
+  .tabs { display:flex; gap:6px; margin-bottom:6px; }
+  .tab { border:1px solid var(--line); background:transparent; color:var(--muted); padding:6px 12px; border-radius:999px; cursor:pointer; font:inherit; font-size:13px; }
+  .tab.active { background:var(--bg); color:var(--fg); border-color:var(--accent); }
+  .examples { display:flex; gap:6px; flex-wrap:wrap; margin-top:6px; }
+  .chip { border:1px solid var(--line); background:transparent; color:var(--muted); border-radius:999px; padding:4px 10px; font-size:12px; cursor:pointer; font:inherit; }
+  .chip:hover { color:var(--fg); border-color:var(--muted); }
+  .bar { height:8px; background:var(--bar); border-radius:4px; overflow:hidden; }
+  .bar > i { display:block; height:100%; background:var(--accent); transition:width .25s ease; }
+  .opt { display:grid; grid-template-columns:minmax(90px, 160px) 1fr 58px; gap:10px; align-items:center; margin:7px 0; font-variant-numeric:tabular-nums; font-size:14px; }
+  .opt .lab { white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .opt.top .lab { color:var(--accent); font-weight:600; }
+  .meta { color:var(--muted); font-size:13px; margin-top:8px; }
+  .kpis { display:grid; grid-template-columns:repeat(3,1fr); gap:10px; margin:12px 0 0; }
+  .kpi { background:var(--bg); border:1px solid var(--line); border-radius:10px; padding:10px 12px; }
+  .kpi b { display:block; font-size:20px; letter-spacing:-.01em; }
+  .kpi span { color:var(--muted); font-size:12px; }
+  .abstain { display:inline-block; border-radius:6px; padding:2px 8px; font-size:12px; background:color-mix(in srgb, var(--warn) 18%, transparent); color:var(--warn); }
+  .commit { display:inline-block; border-radius:6px; padding:2px 8px; font-size:12px; background:color-mix(in srgb, var(--accent) 18%, transparent); color:var(--accent); }
+  section { padding:34px 0; border-top:1px solid var(--line); }
+  section h2 { font-size:24px; letter-spacing:-.015em; margin:0 0 6px; }
+  section p.sub { color:var(--muted); margin:0 0 18px; max-width:760px; }
+  table { width:100%; border-collapse:collapse; font-size:14px; }
+  th, td { text-align:left; padding:9px 10px; border-bottom:1px solid var(--line); vertical-align:top; }
+  th { color:var(--muted); font-weight:600; font-size:12px; text-transform:uppercase; letter-spacing:.05em; }
+  td.win { color:var(--accent); font-weight:600; }
+  .tablewrap { overflow:auto; border:1px solid var(--line); border-radius:12px; background:var(--card); }
+  .three { display:grid; grid-template-columns:repeat(3,1fr); gap:14px; }
+  @media (max-width: 820px) { .three { grid-template-columns:1fr; } .kpis { grid-template-columns:1fr 1fr 1fr; } }
+  .feature h4 { margin:0 0 6px; font-size:16px; }
+  .feature p { margin:0; color:var(--muted); font-size:14px; }
+  .cascade { display:grid; grid-template-columns:1fr 1fr; gap:16px; align-items:start; }
+  @media (max-width: 820px) { .cascade { grid-template-columns:1fr; } }
+  input[type=range] { padding:0; accent-color:var(--accent); }
+  footer { padding:28px 0 48px; color:var(--muted); font-size:13px; border-top:1px solid var(--line); }
+  .small { font-size:12px; color:var(--muted); }
 </style>
 </head>
 <body>
-<main>
-  <h1>Verdict playground <span class="badge" id="status">loading model…</span></h1>
-  <p class="sub">A 118M-parameter multilingual decision model running entirely in this tab. No server, no API key. Type any language.</p>
+<div class="wrap">
+  <nav>
+    <span class="brand">verdict</span>
+    <span class="links"><a href="#demo">Demo</a><a href="#numbers">Numbers</a><a href="#cascade">Cascade</a><a href="https://github.com/Manavarya09/verdict">GitHub</a></span>
+  </nav>
 
-  <div class="card">
-    <label for="state">Input</label>
-    <textarea id="state">Hi, we were billed twice for March. Please refund the duplicate today or we will cancel our plan.</textarea>
+  <div class="hero">
+    <span class="pill" id="status"><i></i><span id="status-text">loading the model into this tab…</span></span>
+    <h1>Small, fast, <em>honest</em> decision models.</h1>
+    <p class="lead">Replace LLM calls for routing, guardrails and triage with typed answers in milliseconds. Every answer carries a calibrated probability and an abstain flag with a coverage guarantee. Open weights, open data, runs on a CPU or in this browser tab.</p>
+    <div class="cta">
+      <a class="btn primary" href="#demo">Try it below</a>
+      <a class="btn" href="https://github.com/Manavarya09/verdict">pip install verdictml</a>
+    </div>
+<pre class="snippet"><code>from verdict import Verdict
+
+v = Verdict()                                                      # 118M params, 100+ languages
+v.choose("Billed twice, refund or we cancel", ["billing", "technical", "sales"])   # billing  p=0.71
+v.check("Can I talk to a person?", claim="the user asks for a human")             # True     p=0.84
+
+d = v.compile(question).fit(examples).calibrate(held_out, coverage=0.9)           # seconds, on a CPU
+d("the courier lost my parcel").confidence.abstain                                # False: it commits</code></pre>
   </div>
 
-  <div class="row">
-    <div class="card">
-      <label for="options">Choose: one option per line (<code>label: description</code>)</label>
-      <textarea id="options">billing: invoices, payments, refunds
+  <section id="demo">
+    <h2>Live demo, no server</h2>
+    <p class="sub">The same 118M-parameter multilingual encoder as the Python package, running in your browser on WebGPU or WASM. Type in any language. Zero-shot probabilities here are uncalibrated; the package's <code>calibrate()</code> adds temperature scaling and the conformal abstain set.</p>
+    <div class="grid">
+      <div class="card">
+        <h3>Input</h3>
+        <textarea id="state">Hi, we were billed twice for March. Please refund the duplicate today or we will cancel our plan.</textarea>
+        <div class="examples" id="examples"></div>
+        <div class="tabs" style="margin-top:14px">
+          <button class="tab active" data-tab="choose">choose</button>
+          <button class="tab" data-tab="score">score</button>
+          <button class="tab" data-tab="check">check</button>
+        </div>
+        <div data-pane="choose">
+          <label>Options, one per line (<code>label: description</code>)</label>
+          <textarea id="options">billing: invoices, payments, refunds
 technical: bugs, outages, errors
 sales: pricing, new contracts
 other: everything else</textarea>
-    </div>
-    <div class="card">
-      <label for="claim">Check: a claim about the input</label>
-      <input id="claim" value="the customer threatens to cancel or leave">
-      <label for="scale" style="margin-top:12px">Score: rubric, one level per line (low to high)</label>
-      <textarea id="scale" style="min-height:60px">not urgent
+          <label>Framing question (optional)</label>
+          <input id="prompt" value="Which team should handle this?">
+        </div>
+        <div data-pane="score" hidden>
+          <label>Rubric, one level per line, low to high</label>
+          <textarea id="scale">not urgent
 soon
 blocking issue or hard deadline</textarea>
+          <label>Framing question (optional)</label>
+          <input id="prompt-score" value="How urgent is this?">
+        </div>
+        <div data-pane="check" hidden>
+          <label>Claim about the input</label>
+          <input id="claim" value="the customer threatens to cancel or leave">
+        </div>
+        <div class="cta"><button class="btn primary" id="run" disabled>Decide</button><span class="meta" id="timing"></span></div>
+      </div>
+      <div class="card" id="out">
+        <h3>Answer</h3>
+        <div id="answer" class="meta">Waiting for the model…</div>
+        <div class="kpis" id="kpis" hidden>
+          <div class="kpi"><b id="k-top">–</b><span>top probability</span></div>
+          <div class="kpi"><b id="k-margin">–</b><span>margin to 2nd</span></div>
+          <div class="kpi"><b id="k-ms">–</b><span>ms in this tab</span></div>
+        </div>
+      </div>
     </div>
-  </div>
+  </section>
 
-  <button id="run" disabled>Decide</button>
-  <span class="status" id="timing"></span>
+  <section id="numbers">
+    <h2>Numbers, including the ones we lose</h2>
+    <p class="sub">Every Verdict figure comes from <code>python -m bench.run</code> with a no-leakage protocol: heads on train minus a fixed calibration slice, calibration on that slice only, scores on the untouched test split. Banking77, SST-5 and ToxicChat are never in the training mix. Jev and Laya figures are from their own docs and third-party evals.</p>
+    <div class="tablewrap"><table>
+      <thead><tr><th></th><th>Jev (closed)</th><th>Laya (open)</th><th>Verdict</th></tr></thead>
+      <tbody>
+        <tr><td>Banking77, zero-shot</td><td>0.80-0.87</td><td>0.425</td><td class="win">0.594 · 0.650 with reranker</td></tr>
+        <tr><td>Banking77, 16 labels per class</td><td>not possible</td><td>hours on 2 GPUs</td><td class="win">0.860 in 0.9 s on a CPU</td></tr>
+        <tr><td>Banking77, full train</td><td>–</td><td>–</td><td class="win">0.920</td></tr>
+        <tr><td>CLINC150, 16 labels per class</td><td>0.87 (zero-shot)</td><td>–</td><td class="win">0.928</td></tr>
+        <tr><td>MASSIVE, Hindi input, English labels, full</td><td>English first</td><td>0.451 non-English mean</td><td class="win">0.863</td></tr>
+        <tr><td>ToxicChat, full train</td><td>–</td><td>0.755 acc</td><td class="win">AUROC 0.955</td></tr>
+        <tr><td>Calibration (ECE)</td><td>0.144-0.246</td><td>0.466 as shipped</td><td class="win">0.01-0.04</td></tr>
+        <tr><td>"I don't know"</td><td>opaque confidence</td><td>act head always 1.0</td><td class="win">conformal set, coverage guarantee</td></tr>
+        <tr><td>Max options</td><td>255</td><td>~20 before degrading</td><td class="win">unbounded</td></tr>
+        <tr><td>Latency</td><td>70-500 ms network</td><td>33 ms GPU · 329 ms+ CPU</td><td class="win">0.5 ms batched (M-series) · single-digit ms CPU</td></tr>
+        <tr><td>Where it is weak</td><td>>255 options, non-English, no fine-tune</td><td>zero-shot near chance, 512 ctx</td><td>zero-shot <code>score</code>/<code>check</code> with the bi-encoder alone (SST-5 0.27, ToxicChat AUROC 0.59)</td></tr>
+      </tbody>
+    </table></div>
+    <p class="small" style="margin-top:10px">Full table with fit time and per-suite ECE: <a href="https://github.com/Manavarya09/verdict/blob/main/docs/BENCHMARKS.md">docs/BENCHMARKS.md</a>. Sources: <a href="https://github.com/Manavarya09/verdict/blob/main/docs/RESEARCH.md">docs/RESEARCH.md</a>.</p>
+  </section>
 
-  <div class="card" id="out" hidden>
-    <div id="choose"></div>
-    <div id="check" style="margin-top:14px"></div>
-    <div id="score" style="margin-top:14px"></div>
-  </div>
+  <section id="cascade">
+    <h2>The cascade, in one slider</h2>
+    <p class="sub">Verdict answers what it is sure about and abstains on the rest. Pick a coverage target; see how much of your traffic never reaches an LLM. Curves are the measured Banking77 rows (16 labels per class).</p>
+    <div class="cascade">
+      <div class="card">
+        <label>Coverage target: <b id="cov-v">90%</b></label>
+        <input type="range" id="cov" min="80" max="99" value="90">
+        <label>Monthly decisions</label>
+        <input id="vol" type="number" value="1000000">
+        <label>LLM cost per 1,000 decisions (USD)</label>
+        <input id="llmcost" type="number" value="3.00" step="0.1">
+      </div>
+      <div class="card">
+        <div class="kpis" style="margin:0">
+          <div class="kpi"><b id="c-auto">–</b><span>handled by Verdict</span></div>
+          <div class="kpi"><b id="c-acc">–</b><span>accuracy when it commits</span></div>
+          <div class="kpi"><b id="c-save">–</b><span>LLM spend avoided / month</span></div>
+        </div>
+        <p class="meta" id="c-note"></p>
+      </div>
+    </div>
+  </section>
 
-  <p class="status">Same maths as the Python package: cosine similarity between the input and each option, scaled by 20, softmax. Zero-shot probabilities here are uncalibrated; the Python package's <code>calibrate()</code> adds temperature scaling and a conformal abstain set.</p>
-</main>
+  <section>
+    <h2>How it is built</h2>
+    <div class="three">
+      <div class="card feature"><h4>Options embedded once</h4><p>Input and options go through one small bi-encoder. 10 or 10,000 options cost the same per input. An optional cross-encoder reranks the top-k.</p></div>
+      <div class="card feature"><h4>Heads that fit in seconds</h4><p>A prototype head from one example per class, a logistic head initialised at the zero-shot solution when you have more. No fine-tuning, no GPU, deterministic.</p></div>
+      <div class="card feature"><h4>Calibration with a guarantee</h4><p>Temperature scaling for honest probabilities, then split conformal prediction: on data like your held-out set, the true label is in the set at least <em>coverage</em> of the time.</p></div>
+    </div>
+  </section>
+
+  <footer>
+    Apache-2.0 · <a href="https://github.com/Manavarya09/verdict">github.com/Manavarya09/verdict</a> · wire-compatible with <code>POST /v1/systemone</code>
+  </footer>
+</div>
 
 <script type="module">
 import { pipeline, env } from "https://cdn.jsdelivr.net/npm/@huggingface/transformers@3.5.2";
 env.allowLocalModels = false;
-
 const $ = (id) => document.getElementById(id);
 const SCALE = 20;
-let extractor;
-const cache = new Map();
+let extractor; const cache = new Map(); let tab = "choose";
+
+const EXAMPLES = [
+  ["🇬🇧 refund", "Hi, we were billed twice for March. Please refund the duplicate today or we will cancel our plan."],
+  ["🇮🇳 हिन्दी", "मुझसे दो बार शुल्क लिया गया, कृपया पैसे वापस करें, वरना मैं प्लान रद्द कर दूँगा।"],
+  ["🇩🇪 Deutsch", "Seit dem Update stürzt die App beim Start ab. Bitte dringend beheben."],
+  ["🇪🇸 Español", "¿Tienen descuento para equipos de más de 50 personas? Queremos un contrato anual."],
+  ["🇯🇵 日本語", "ログインできません。パスワードをリセットしても同じエラーが出ます。"],
+];
+EXAMPLES.forEach(([n, t]) => { const b = document.createElement("button"); b.className = "chip"; b.textContent = n; b.onclick = () => { $("state").value = t; run(); }; $("examples").appendChild(b); });
+
+document.querySelectorAll(".tab").forEach((b) => b.addEventListener("click", () => {
+  tab = b.dataset.tab; document.querySelectorAll(".tab").forEach((x) => x.classList.toggle("active", x === b));
+  document.querySelectorAll("[data-pane]").forEach((p) => p.hidden = p.dataset.pane !== tab); run();
+}));
 
 async function embed(texts, prefix) {
-  const out = [];
   const todo = texts.filter((t) => !cache.has(prefix + t));
   if (todo.length) {
     const res = await extractor(todo.map((t) => prefix + t), { pooling: "mean", normalize: true });
     const dim = res.dims[1];
     todo.forEach((t, i) => cache.set(prefix + t, Array.from(res.data.slice(i * dim, (i + 1) * dim))));
   }
-  for (const t of texts) out.push(cache.get(prefix + t));
-  return out;
+  return texts.map((t) => cache.get(prefix + t));
 }
 const dot = (a, b) => a.reduce((s, x, i) => s + x * b[i], 0);
-function softmax(z) { const m = Math.max(...z); const e = z.map((x) => Math.exp(x - m)); const s = e.reduce((a, b) => a + b, 0); return e.map((x) => x / s); }
-function entropy(p) { return -p.reduce((s, x) => s + (x > 0 ? x * Math.log(x) : 0), 0) / Math.log(p.length); }
+const softmax = (z) => { const m = Math.max(...z); const e = z.map((x) => Math.exp(x - m)); const s = e.reduce((a, b) => a + b, 0); return e.map((x) => x / s); };
 
-function render(el, title, labels, probs, extra = "") {
+function bars(labels, probs, extraHtml) {
   const order = probs.map((p, i) => i).sort((a, b) => probs[b] - probs[a]);
-  el.innerHTML = `<label>${title}</label>` + order.map((i) =>
-    `<div class="opt"><span>${labels[i]}</span><div class="bar"><i style="width:${(probs[i] * 100).toFixed(1)}%"></i></div><span>${(probs[i] * 100).toFixed(1)}%</span></div>`
-  ).join("") + (extra ? `<div class="status">${extra}</div>` : "");
+  return order.map((i, r) => `<div class="opt ${r === 0 ? "top" : ""}"><span class="lab" title="${labels[i]}">${labels[i]}</span><div class="bar"><i style="width:${(probs[i] * 100).toFixed(1)}%"></i></div><span>${(probs[i] * 100).toFixed(1)}%</span></div>`).join("") + (extraHtml ? `<div class="meta">${extraHtml}</div>` : "");
+}
+function kpis(probs, ms) {
+  const s = [...probs].sort((a, b) => b - a);
+  $("k-top").textContent = (s[0] * 100).toFixed(1) + "%"; $("k-margin").textContent = ((s[0] - (s[1] ?? 0)) * 100).toFixed(1) + "%"; $("k-ms").textContent = ms.toFixed(0); $("kpis").hidden = false;
 }
 
 async function run() {
+  if (!extractor) return;
   $("run").disabled = true;
   const t0 = performance.now();
   const state = $("state").value.trim();
   const [x] = await embed([state], "query: ");
-
-  const opts = $("options").value.split("\n").map((l) => l.trim()).filter(Boolean).map((l) => {
-    const i = l.indexOf(":"); return i > 0 ? { label: l.slice(0, i).trim(), text: l.slice(i + 1).trim() } : { label: l, text: l.replace(/[_-]/g, " ") };
-  });
-  if (opts.length >= 2) {
-    const O = await embed(opts.map((o) => o.text), "passage: ");
-    const p = softmax(O.map((o) => dot(o, x) * SCALE));
-    const top = p.indexOf(Math.max(...p));
-    render($("choose"), "choose", opts.map((o) => o.label), p, `top: <b>${opts[top].label}</b> · margin ${(p[top] - [...p].sort((a, b) => b - a)[1]).toFixed(2)} · normalised entropy ${entropy(p).toFixed(2)}`);
-  }
-
-  const claim = $("claim").value.trim();
-  if (claim) {
+  let html = "";
+  let probs = [];
+  if (tab === "choose") {
+    const prompt = $("prompt").value.trim();
+    const opts = $("options").value.split("\n").map((l) => l.trim()).filter(Boolean).map((l) => { const i = l.indexOf(":"); return i > 0 ? { label: l.slice(0, i).trim(), text: l.slice(i + 1).trim() } : { label: l, text: l.replace(/[_-]/g, " ") }; });
+    if (opts.length < 2) { html = "<span class='meta'>give at least two options</span>"; }
+    else {
+      const O = await embed(opts.map((o) => (prompt ? prompt + " " : "") + o.text), "passage: ");
+      probs = softmax(O.map((o) => dot(o, x) * SCALE));
+      const top = probs.indexOf(Math.max(...probs));
+      const s = [...probs].sort((a, b) => b - a);
+      html = bars(opts.map((o) => o.label), probs, `${s[0] - s[1] < 0.1 ? "<span class='abstain'>would abstain (margin < 0.10, uncalibrated)</span>" : "<span class='commit'>commits</span>"} &nbsp; top: <b>${opts[top].label}</b>`);
+    }
+  } else if (tab === "score") {
+    const prompt = $("prompt-score").value.trim();
+    const levels = $("scale").value.split("\n").map((l) => l.trim()).filter(Boolean);
+    if (levels.length < 2) { html = "<span class='meta'>give at least two levels</span>"; }
+    else {
+      const L = await embed(levels.map((l) => (prompt ? prompt + " " : "") + l), "passage: ");
+      probs = softmax(L.map((l) => dot(l, x) * SCALE));
+      const expected = probs.reduce((s, v, i) => s + v * (i + 1), 0);
+      html = bars(levels.map((l, i) => `${i + 1} · ${l}`), probs, `expected value <b>${expected.toFixed(2)}</b> of ${levels.length}`);
+    }
+  } else {
+    const claim = $("claim").value.trim();
     const H = await embed([`It is false that ${claim}`, `It is true that ${claim}`], "passage: ");
-    const p = softmax(H.map((h) => dot(h, x) * SCALE));
-    render($("check"), "check", ["false", "true"], p, `P(true) = ${p[1].toFixed(3)}`);
+    probs = softmax(H.map((h) => dot(h, x) * SCALE));
+    html = bars(["false", "true"], probs, `P(true) = <b>${probs[1].toFixed(3)}</b> · zero-shot <code>check</code> is the bi-encoder's weakest mode; the package's reranker or 16 labels fix it`);
   }
-
-  const levels = $("scale").value.split("\n").map((l) => l.trim()).filter(Boolean);
-  if (levels.length >= 2) {
-    const L = await embed(levels, "passage: ");
-    const p = softmax(L.map((l) => dot(l, x) * SCALE));
-    const expected = p.reduce((s, v, i) => s + v * (i + 1), 0);
-    render($("score"), "score", levels.map((l, i) => `${i + 1} · ${l}`), p, `expected value ${expected.toFixed(2)} of ${levels.length}`);
-  }
-
-  $("out").hidden = false;
-  $("timing").textContent = `${(performance.now() - t0).toFixed(0)} ms (first run includes option embedding; repeats are cached)`;
+  const ms = performance.now() - t0;
+  $("answer").innerHTML = html; if (probs.length) kpis(probs, ms);
+  $("timing").textContent = `${ms.toFixed(0)} ms`;
   $("run").disabled = false;
 }
+
+// cascade calculator: measured Banking77 16-shot rows at several coverages (automation, acc when committed)
+const CURVE = { 80: [0.91, 0.912], 85: [0.86, 0.93], 90: [0.76, 0.96], 95: [0.58, 0.978], 99: [0.31, 0.993] };
+function cascade() {
+  const c = +$("cov").value; $("cov-v").textContent = c + "%";
+  const keys = Object.keys(CURVE).map(Number).sort((a, b) => a - b);
+  let lo = keys[0], hi = keys[keys.length - 1];
+  for (const k of keys) { if (k <= c) lo = k; } for (const k of [...keys].reverse()) { if (k >= c) hi = k; }
+  const t = hi === lo ? 0 : (c - lo) / (hi - lo);
+  const auto = CURVE[lo][0] + t * (CURVE[hi][0] - CURVE[lo][0]);
+  const acc = CURVE[lo][1] + t * (CURVE[hi][1] - CURVE[lo][1]);
+  const vol = +$("vol").value || 0, cost = +$("llmcost").value || 0;
+  $("c-auto").textContent = (auto * 100).toFixed(0) + "%"; $("c-acc").textContent = (acc * 100).toFixed(1) + "%";
+  $("c-save").textContent = "$" + Math.round(vol * auto / 1000 * cost).toLocaleString();
+  $("c-note").textContent = `${Math.round(vol * auto).toLocaleString()} decisions/month answered by Verdict, ${Math.round(vol * (1 - auto)).toLocaleString()} escalated. Interpolated between measured points at 80/85/90/95/99% coverage.`;
+}
+["cov", "vol", "llmcost"].forEach((id) => $(id).addEventListener("input", cascade)); cascade();
 
 (async () => {
   try {
     extractor = await pipeline("feature-extraction", "Xenova/multilingual-e5-small", { dtype: "q8", device: navigator.gpu ? "webgpu" : "wasm",
-      progress_callback: (p) => { if (p.status === "progress") $("status").textContent = `downloading ${Math.round(p.progress || 0)}%`; } });
-    $("status").textContent = navigator.gpu ? "ready · WebGPU" : "ready · WASM";
-    $("run").disabled = false;
-    $("run").addEventListener("click", run);
+      progress_callback: (p) => { if (p.status === "progress") $("status-text").textContent = `downloading model ${Math.round(p.progress || 0)}%`; } });
+    $("status").classList.add("ready"); $("status-text").textContent = `model ready · ${navigator.gpu ? "WebGPU" : "WASM"} · 118M params in this tab`;
+    $("run").disabled = false; $("run").addEventListener("click", run);
+    ["state", "options", "prompt", "prompt-score", "scale", "claim"].forEach((id) => $(id).addEventListener("keydown", (e) => { if ((e.metaKey || e.ctrlKey) && e.key === "Enter") run(); }));
     run();
-  } catch (e) {
-    $("status").textContent = "failed to load: " + e.message;
-  }
+  } catch (e) { $("status-text").textContent = "failed to load: " + e.message; }
 })();
 </script>
 </body>
