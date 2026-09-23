@@ -28,8 +28,11 @@ _PREFIXES = {
 
 
 def _prefixes_for(model_name: str) -> tuple[str, str]:
+    name = model_name.lower()
+    if name.startswith("verdict-") or "/verdict-" in name or name.startswith("runs/"):
+        return _PREFIXES["e5"]  # our checkpoints are trained from e5 with its prefixes
     for key, pair in _PREFIXES.items():
-        if key in model_name.lower():
+        if key in name:
             return pair
     return ("", "")
 
@@ -47,9 +50,11 @@ class EmbedEngine(Engine):
     ):
         from sentence_transformers import SentenceTransformer
 
+        from ..models import resolve
+
         self.model_name = model
         self.device = pick_device(device)
-        self.model = SentenceTransformer(model, device=self.device)
+        self.model = SentenceTransformer(resolve(model), device=self.device)
         if max_seq_length:
             self.model.max_seq_length = max_seq_length
         self.scale = float(scale)  # cosine in [-1,1] -> logits; 20 is the usual SBERT scale
