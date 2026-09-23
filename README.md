@@ -66,7 +66,15 @@ Banking77, 16 labels per class, coverage 0.90:
 ```
 
 Read: at 90% coverage Verdict commits on 76% of tickets, is right 94.7% of the time when it
-does, and hands the rest to a human or an LLM. Build the cascade with one `if`.
+does, and hands the rest to a human or an LLM. The cascade is one object:
+
+```python
+from verdict.cascade import Cascade
+
+route = Cascade(d, fallback=lambda text, answer: llm_router(text, shortlist=answer.confidence.conformal_set))
+route("where is my parcel")   # Verdict's label when it commits, the LLM's otherwise
+route.stats()                 # calls, committed share, average ms on each path
+```
 
 ## Teach it your decision
 
