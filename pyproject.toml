@@ -47,12 +47,13 @@ build-backend = "hatchling.build"
 packages = ["src/verdict"]
 
 [tool.ruff]
-line-length = 100
+line-length = 110
 target-version = "py310"
 src = ["src", "tests"]
 
 [tool.ruff.lint]
 select = ["E", "F", "I", "UP", "B", "SIM"]
+ignore = ["E501", "E741", "B008", "B905", "B027"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

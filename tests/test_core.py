@@ -1,7 +1,7 @@
 import numpy as np
 import pytest
 
-from verdict import Decider, Example, Question, Verdict
+from verdict import Decider, Question, Verdict
 from verdict.types import Decision, Option, options_from
 
 

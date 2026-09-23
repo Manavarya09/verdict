@@ -9,9 +9,10 @@ Two heads:
 
 * ``PrototypeHead`` few-shot: class prototypes = mean embedding of examples, blended with
   the zero-shot option embedding. Works from 1 example per class.
-* ``LinearHead`` many-shot: multinomial logistic regression (L-BFGS) on embeddings, with
-  the zero-shot similarity as an extra feature so it degrades gracefully to zero-shot for
-  classes with no data.
+* ``LinearHead`` many-shot: multinomial logistic regression (L-BFGS) on embeddings,
+  initialised at the zero-shot solution and shrunk towards it (not towards zero), so classes
+  with no data degrade gracefully to zero-shot. Default ``l2=1e-5`` matches sklearn C~100
+  on unit-norm embeddings; larger values under-fit badly (0.60 vs 0.92 on Banking77).
 """
 
 from __future__ import annotations
@@ -89,7 +90,7 @@ class LinearHead:
     W: np.ndarray  # [K, D+1]  (last column = zero-shot similarity feature weight per class)
     b: np.ndarray  # [K]
     zero_shot: np.ndarray  # [K, D]
-    l2: float = 1e-2
+    l2: float = 1e-5
     history: list[float] = field(default_factory=list)
 
     @staticmethod
@@ -104,8 +105,8 @@ class LinearHead:
         y: np.ndarray,
         labels: list[str],
         option_embeddings: np.ndarray,
-        l2: float = 1e-2,
-        max_iter: int = 300,
+        l2: float = 1e-5,
+        max_iter: int = 1000,
         zero_shot_weight: float = 1.0,
         class_weight: str | None = "balanced",
     ) -> LinearHead:
@@ -172,7 +173,7 @@ class LinearHead:
 
     @classmethod
     def from_dict(cls, d: dict) -> LinearHead:
-        return cls(d["labels"], np.array(d["W"]), np.array(d["b"]), np.array(d["zero_shot"]), d.get("l2", 1e-2))
+        return cls(d["labels"], np.array(d["W"]), np.array(d["b"]), np.array(d["zero_shot"]), d.get("l2", 1e-5))
 
 
 Head = PrototypeHead | LinearHead

@@ -12,7 +12,8 @@ Three question kinds cover the decisions that happen constantly inside software:
 
 from __future__ import annotations
 
-from typing import Generic, Literal, Sequence, TypeVar
+from collections.abc import Sequence
+from typing import Generic, Literal, TypeVar
 
 from pydantic import BaseModel, Field, model_validator
 

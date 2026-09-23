@@ -1,0 +1,25 @@
+name: ci
+on:
+  push: { branches: [main] }
+  pull_request:
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix: { python: ["3.10", "3.12"] }
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v3
+      - run: uv venv --python ${{ matrix.python }} && uv pip install -e ".[dev,serve,bench]"
+      - run: uv run ruff check src tests
+      - run: uv run pytest -m "not slow"
+  slow:
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v3
+      - uses: actions/cache@v4
+        with: { path: ~/.cache/huggingface, key: hf-${{ runner.os }}-e5-small }
+      - run: uv venv --python 3.12 && uv pip install -e ".[dev,serve,bench]"
+      - run: uv run pytest -m slow

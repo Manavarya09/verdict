@@ -16,8 +16,9 @@ from __future__ import annotations
 
 import json
 import time
+from collections.abc import Sequence
 from pathlib import Path
-from typing import Literal, Sequence
+from typing import Literal
 
 import numpy as np
 
@@ -118,10 +119,7 @@ class Decider:
         return self.engine.embed_inputs(rendered)
 
     def _logits_from_embeddings(self, X: np.ndarray, inputs: Sequence[str] | None = None) -> np.ndarray:
-        if self.head is not None:
-            Z = self.head.logits(X)
-        else:
-            Z = (X @ self._O.T) * self.engine.scale
+        Z = self.head.logits(X) if self.head is not None else (X @ self._O.T) * self.engine.scale
         if self.reranker is not None and inputs is not None:
             Z = self._rerank(Z, inputs)
         return Z
@@ -207,7 +205,7 @@ class Decider:
         self,
         examples: Sequence[Example] | Sequence[tuple[str, str | int | bool]],
         head: Literal["auto", "prototype", "linear"] = "auto",
-        l2: float = 1e-2,
+        l2: float = 1e-5,
     ) -> Decider:
         """Train a head on frozen embeddings. Seconds on a CPU.
 
@@ -388,7 +386,7 @@ class Verdict:
         for i, d in enumerate(decisions):
             groups.setdefault(d.question.model_dump_json(), []).append(i)
         out: list[Answer | None] = [None] * len(decisions)
-        for key, idx in groups.items():
+        for idx in groups.values():
             dec = self.compile(decisions[idx[0]].question)
             answers = dec.batch([decisions[i].input for i in idx], [decisions[i].context for i in idx])
             for i, a in zip(idx, answers):

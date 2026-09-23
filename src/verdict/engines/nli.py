@@ -38,7 +38,7 @@ class NLIEngine(Engine):
         self.model = AutoModelForSequenceClassification.from_pretrained(model).to(self.device).eval()
         l2i = {k.lower(): v for k, v in self.model.config.label2id.items()}
         self.ent = l2i.get("entailment", 0)
-        self.con = l2i.get("contradiction", None)
+        self.con = l2i.get("contradiction")
         self.template = template
         self.batch_size = batch_size
         self.max_length = max_length
