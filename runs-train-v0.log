@@ -53,3 +53,15 @@ Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF
 Generating test split:   0%|          | 0/2000 [00:00<?, ? examples/s]Generating test split: 100%|██████████| 2000/2000 [00:00<00:00, 2677500.16 examples/s]
   emotion               8000 rows
   go_emotions           8000 rows
+  yelp                 10000 rows
+Generating train split:   0%|          | 0/49401 [00:00<?, ? examples/s]Generating train split: 100%|██████████| 49401/49401 [00:00<00:00, 2436418.93 examples/s]
+Generating test split:   0%|          | 0/8000 [00:00<?, ? examples/s]Generating test split: 100%|██████████| 8000/8000 [00:00<00:00, 2510244.03 examples/s]
+Generating validation split:   0%|          | 0/8000 [00:00<?, ? examples/s]Generating validation split: 100%|██████████| 8000/8000 [00:00<00:00, 2512499.59 examples/s]
+  paws                  8000 rows
+  aegis                12000 rows
+Generating train split:   0%|          | 0/1680 [00:00<?, ? examples/s]Generating train split: 100%|██████████| 1680/1680 [00:00<00:00, 214804.01 examples/s]
+  openai_moderation     1680 rows
+Generating train split:   0%|          | 0/11916 [00:00<?, ? examples/s]Generating train split: 100%|██████████| 11916/11916 [00:00<00:00, 1783001.91 examples/s]
+Generating test split:   0%|          | 0/860 [00:00<?, ? examples/s]Generating test split: 100%|██████████| 860/860 [00:00<00:00, 585473.37 examples/s]
+Generating validation split:   0%|          | 0/1324 [00:00<?, ? examples/s]Generating validation split: 100%|██████████| 1324/1324 [00:00<00:00, 822826.86 examples/s]
+  tweet_offensive       8000 rows

@@ -299,7 +299,8 @@ async function run() {
 }
 
 // cascade calculator: measured Banking77 16-shot rows at several coverages (automation, acc when committed)
-const CURVE = { 80: [0.91, 0.912], 85: [0.86, 0.93], 90: [0.76, 0.96], 95: [0.58, 0.978], 99: [0.31, 0.993] };
+// results/2026-09-23-banking77-16shot-coverage-sweep.json (automation, accuracy when committed)
+const CURVE = { 80: [0.992, 0.860], 85: [0.934, 0.877], 90: [0.759, 0.947], 95: [0.525, 0.987], 97: [0.405, 0.989], 99: [0.228, 0.993] };
 function cascade() {
   const c = +$("cov").value; $("cov-v").textContent = c + "%";
   const keys = Object.keys(CURVE).map(Number).sort((a, b) => a - b);
@@ -311,7 +312,7 @@ function cascade() {
   const vol = +$("vol").value || 0, cost = +$("llmcost").value || 0;
   $("c-auto").textContent = (auto * 100).toFixed(0) + "%"; $("c-acc").textContent = (acc * 100).toFixed(1) + "%";
   $("c-save").textContent = "$" + Math.round(vol * auto / 1000 * cost).toLocaleString();
-  $("c-note").textContent = `${Math.round(vol * auto).toLocaleString()} decisions/month answered by Verdict, ${Math.round(vol * (1 - auto)).toLocaleString()} escalated. Interpolated between measured points at 80/85/90/95/99% coverage.`;
+  $("c-note").textContent = `${Math.round(vol * auto).toLocaleString()} decisions/month answered by Verdict, ${Math.round(vol * (1 - auto)).toLocaleString()} escalated. Interpolated between measured points at 80/85/90/95/97/99% coverage (Banking77 test, 16 labels per class).`;
 }
 ["cov", "vol", "llmcost"].forEach((id) => $(id).addEventListener("input", cascade)); cascade();
 
