@@ -11,6 +11,7 @@ Why this is the default:
 from __future__ import annotations
 
 import hashlib
+from collections import OrderedDict
 from functools import lru_cache
 
 import numpy as np
@@ -61,6 +62,8 @@ class EmbedEngine(Engine):
         self.batch_size = batch_size
         self.q_prefix, self.p_prefix = _prefixes_for(model)
         self._option_cache: dict[str, np.ndarray] = {}
+        self._input_cache: OrderedDict[str, np.ndarray] = OrderedDict()
+        self.input_cache_size = 4096  # one state asked five questions is one encoder pass
         self.name = f"embed:{model.split('/')[-1]}"
 
     # ---- embedding ------------------------------------------------------------
@@ -77,8 +80,21 @@ class EmbedEngine(Engine):
         return [tok.decode(ids[i : i + budget]) for i in range(0, len(ids), step)]
 
     def embed_inputs(self, texts: list[str]) -> np.ndarray:
-        """Long inputs are chunked, embedded, mean-pooled and re-normalised, so a 20-page
-        document is one vector instead of a silently truncated one."""
+        """Cached per text (LRU), so asking several questions about one input costs one
+        encoder pass. Long inputs are chunked, embedded, mean-pooled and re-normalised, so
+        a 20-page document is one vector instead of a silently truncated one."""
+        out: list[np.ndarray | None] = [self._input_cache.get(t) for t in texts]
+        todo = [t for t, v in zip(texts, out) if v is None]
+        if todo:
+            fresh = self._embed_inputs_uncached(list(dict.fromkeys(todo)))
+            for t, v in zip(dict.fromkeys(todo), fresh):
+                self._input_cache[t] = v
+                if len(self._input_cache) > self.input_cache_size:
+                    self._input_cache.popitem(last=False)
+            out = [self._input_cache[t] if v is None else v for t, v in zip(texts, out)]
+        return np.stack(out)  # type: ignore[arg-type]
+
+    def _embed_inputs_uncached(self, texts: list[str]) -> np.ndarray:
         chunked: list[str] = []
         spans: list[tuple[int, int]] = []
         for t in texts:

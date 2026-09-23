@@ -39,6 +39,10 @@ class OnnxEmbedEngine(EmbedEngine):
         self.max_seq_length = max_seq_length
         self.q_prefix, self.p_prefix = _prefixes_for(model)
         self._option_cache: dict[str, np.ndarray] = {}
+        from collections import OrderedDict
+
+        self._input_cache = OrderedDict()
+        self.input_cache_size = 4096
         self.name = f"onnx:{model.split('/')[-1]}"
         from pathlib import Path
 
@@ -78,7 +82,7 @@ class OnnxEmbedEngine(EmbedEngine):
             out.append(pooled.astype(np.float32))
         return np.concatenate(out) if out else np.zeros((0, self.dim), dtype=np.float32)
 
-    def embed_inputs(self, texts: list[str]) -> np.ndarray:
+    def _embed_inputs_uncached(self, texts: list[str]) -> np.ndarray:
         return self._encode([self.q_prefix + t for t in texts])
 
     def embed_options(self, texts: list[str]) -> np.ndarray:
