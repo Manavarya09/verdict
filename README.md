@@ -198,6 +198,8 @@ input ──► bi-encoder (options embedded once, cached) ──► logits
           conformal set (LAC)  ──► commit or abstain
 ```
 
+Options are scored independently, so option order cannot change an answer (Jev shifts log-odds by 0.3-0.5 when you reorder) and P(true) + P(false) is exactly 1 (Jev's ranges 0.71-1.42). Both are tests in `tests/test_invariance.py`.
+
 The default encoder is `intfloat/multilingual-e5-small` (118M, MIT). Swap any
 sentence-transformers model with `Verdict(model=...)`. Add an NLI cross-encoder reranker with
 `Verdict(reranker="MoritzLaurer/mDeBERTa-v3-base-xnli-multilingual-nli-2mil7")` for
