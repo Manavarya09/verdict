@@ -157,11 +157,12 @@ def bench(
     res = run_bench(suite, n=n, shots=[int(s) for s in shots.split(",")], model=model, reranker=reranker)
     if out:
         out.write_text(json.dumps(res, indent=2))
+    cols = ["suite", "shots", "n", "accuracy", "auroc", "ece", "automation_rate", "accuracy_when_committed", "ms_per_example"]
     t = Table(title="verdict bench")
-    for col in ["suite", "shots", "n", "accuracy", "ece", "automation_rate", "accuracy_when_committed", "ms_per_example"]:
-        t.add_column(col)
+    for c in cols:
+        t.add_column(c)
     for r in res:
-        t.add_row(*[f"{r.get(c):.3f}" if isinstance(r.get(c), float) else str(r.get(c)) for c in t.columns and ["suite", "shots", "n", "accuracy", "ece", "automation_rate", "accuracy_when_committed", "ms_per_example"]])
+        t.add_row(*[f"{r[c]:.3f}" if isinstance(r.get(c), float) else str(r.get(c, "")) for c in cols])
     rprint(t)
 
 

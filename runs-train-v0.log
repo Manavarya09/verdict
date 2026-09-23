@@ -25,3 +25,5 @@ The `tokenize` method is deprecated, please use `preprocess` instead.
 step 50/8418 loss 2.3986 acc 0.356 lr 2.43e-06 0.98s/step eta 137m
 step 100/8418 loss 1.8347 acc 0.444 lr 4.81e-06 0.90s/step eta 125m
 step 150/8418 loss 1.7762 acc 0.491 lr 7.19e-06 0.95s/step eta 131m
+step 200/8418 loss 1.4790 acc 0.534 lr 9.57e-06 1.00s/step eta 136m
+step 250/8418 loss 1.3997 acc 0.515 lr 1.20e-05 0.99s/step eta 135m

@@ -73,6 +73,12 @@ class SystemOneRequest(BaseModel):
     questions: dict[str, dict]
 
 
+class SystemOneBatchRequest(BaseModel):
+    model: str | None = None
+    states: list[Any]
+    questions: dict[str, dict]
+
+
 class DecideRequest(BaseModel):
     decisions: list[Decision]
     decider: str | None = None
@@ -122,6 +128,24 @@ def build_app(model: str | None = None, reranker: str | None = None, deciders: l
             "answers": answers,
             "usage": {"input_tokens": tokens, "output_tokens": 0},
         }
+
+    @app.post("/v1/systemone/batch")
+    def systemone_batch(req: SystemOneBatchRequest):
+        """Many states, one question set: each question is one encoder pass over all states."""
+        texts = [_state_text(s) for s in req.states]
+        per_state: list[dict[str, dict]] = [{} for _ in texts]
+        for qid, raw in req.questions.items():
+            q = jev_question_to_verdict(raw)
+            answers = v.compile(q).batch(texts)
+            for i, a in enumerate(answers):
+                conf = a.confidence
+                if q.kind == "choose":
+                    per_state[i][qid] = {"type": "choice", "choice": a.label, "confidence": round(conf.probability, 4), "probabilities": {k: round(p, 4) for k, p in a.distribution.items()}, "abstain": conf.abstain}  # type: ignore[union-attr]
+                elif q.kind == "score":
+                    per_state[i][qid] = {"type": "score", "score": round(a.expected, 4), "confidence": round(conf.probability, 4), "probabilities": {str(k): round(p, 4) for k, p in a.distribution.items()}, "abstain": conf.abstain}  # type: ignore[union-attr]
+                else:
+                    per_state[i][qid] = {"type": "noul", "noul": round(a.probability, 4), "abstain": conf.abstain}  # type: ignore[union-attr]
+        return {"model": f"verdict/{v.engine.model_name.split('/')[-1]}", "results": [{"answers": a} for a in per_state], "usage": {"input_tokens": sum(len(t.split()) for t in texts) * len(req.questions), "output_tokens": 0}}
 
     @app.post("/v1/decide")
     def decide(req: DecideRequest):

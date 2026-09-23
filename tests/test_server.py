@@ -41,3 +41,18 @@ def test_systemone_and_decide():
         json={"decisions": [{"input": "the striker scored", "question": {"kind": "choose", "options": [{"label": "sports"}, {"label": "finance"}]}}]},
     )
     assert r.json()["answers"][0]["label"] == "sports"
+
+
+@pytest.mark.slow
+def test_systemone_batch():
+    c = TestClient(build_app())
+    r = c.post(
+        "/v1/systemone/batch",
+        json={
+            "states": ["refund me now", "the app crashes on launch"],
+            "questions": {"dept": {"type": "choice", "criteria": {"billing": "refunds", "tech": "bugs, crashes"}}},
+        },
+    )
+    assert r.status_code == 200, r.text
+    res = r.json()["results"]
+    assert res[0]["answers"]["dept"]["choice"] == "billing" and res[1]["answers"]["dept"]["choice"] == "tech"
