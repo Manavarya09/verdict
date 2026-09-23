@@ -78,22 +78,30 @@ def massive(langs: list[str], cap_per_lang: int, seed: int) -> list[Row]:
     return out
 
 
+def _deeppavlov_names(repo: str) -> list[str]:
+    """DeepPavlov intent sets keep names in a separate parquet, ordered by id."""
+    import re
+
+    import pandas as pd
+
+    df = pd.read_parquet(f"hf://datasets/{repo}/intents/intents-00000-of-00001.parquet").sort_values("id")
+    return [re.sub(r"(?<=[a-z])(?=[A-Z])", " ", n).replace("_", " ").lower() for n in df["name"]]
+
+
 def hwu64(cap: int, seed: int) -> list[Row]:
     from datasets import load_dataset
 
     ds = load_dataset("DeepPavlov/hwu64", split="train")
-    names = [n.replace("_", " ") for n in ds.features["label"].names]
-    _, opts = _choose(names, "What does the user want?")
-    return _cap([Row(t, opts, i, "hwu64") for t, i in zip(ds["utterance"], ds["label"])], cap, seed)
+    _, opts = _choose(_deeppavlov_names("DeepPavlov/hwu64"), "What does the user want?")
+    return _cap([Row(t, opts, int(i), "hwu64") for t, i in zip(ds["utterance"], ds["label"])], cap, seed)
 
 
 def snips(cap: int, seed: int) -> list[Row]:
     from datasets import load_dataset
 
     ds = load_dataset("DeepPavlov/snips", split="train")
-    names = [n.replace("_", " ") for n in ds.features["label"].names]
-    _, opts = _choose(names, "What does the user want?")
-    return _cap([Row(t, opts, i, "snips") for t, i in zip(ds["utterance"], ds["label"])], cap, seed)
+    _, opts = _choose(_deeppavlov_names("DeepPavlov/snips"), "What does the user want?")
+    return _cap([Row(t, opts, int(i), "snips") for t, i in zip(ds["utterance"], ds["label"])], cap, seed)
 
 
 def ag_news(cap: int, seed: int) -> list[Row]:
