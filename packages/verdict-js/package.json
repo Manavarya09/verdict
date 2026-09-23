@@ -5,9 +5,52 @@
   "type": "module",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
-  "files": ["dist"],
-  "scripts": { "build": "tsc -p .", "test": "node --test --import tsx tests/*.test.ts" },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsc -p .",
+    "test": "node --test --import tsx tests/*.test.ts"
+  },
   "license": "Apache-2.0",
-  "devDependencies": { "typescript": "^5.6.0", "tsx": "^4.19.0" },
-  "engines": { "node": ">=20" }
+  "devDependencies": {
+    "typescript": "^5.6.0",
+    "tsx": "^4.19.0"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./browser": {
+      "types": "./dist/browser.d.ts",
+      "import": "./dist/browser.js"
+    }
+  },
+  "peerDependencies": {
+    "@huggingface/transformers": ">=3.0.0"
+  },
+  "peerDependenciesMeta": {
+    "@huggingface/transformers": {
+      "optional": true
+    }
+  },
+  "keywords": [
+    "decision-model",
+    "classification",
+    "routing",
+    "guardrails",
+    "calibration",
+    "jev",
+    "laya",
+    "webgpu"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Manavarya09/verdict",
+    "directory": "packages/verdict-js"
+  }
 }
