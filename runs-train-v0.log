@@ -13,3 +13,7 @@ Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF
   aegis                12000 rows
   openai_moderation     1680 rows
   tweet_offensive       8000 rows
+  xnli                 15000 rows
+  amazon_reviews        6000 rows
+total 134680 rows
+Loading weights:   0%|          | 0/199 [00:00<?, ?it/s]Loading weights: 100%|██████████| 199/199 [00:00<00:00, 28395.81it/s]
