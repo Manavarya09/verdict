@@ -19,14 +19,46 @@ from .core import Verdict
 from .types import Decision, Option, Question
 
 
-def _state_text(state: Any) -> str:
+def render_state(state: Any) -> str:
+    """Structured state -> readable ``key: value`` lines (nested keys joined with dots).
+    Encoders read this far better than raw JSON braces and quotes. A string that parses as
+    a JSON object is rendered the same way."""
     if state is None:
         return ""
     if isinstance(state, str):
-        return state
-    import json
+        st = state.strip()
+        if st.startswith("{") and st.endswith("}"):
+            import json
 
-    return json.dumps(state, ensure_ascii=False)
+            try:
+                return render_state(json.loads(st))
+            except Exception:
+                return state
+        return state
+    if isinstance(state, dict):
+        lines: list[str] = []
+
+        def walk(prefix: str, v: Any) -> None:
+            if isinstance(v, dict):
+                for k, x in v.items():
+                    walk(f"{prefix}.{k}" if prefix else str(k), x)
+            elif isinstance(v, list) and v and all(not isinstance(x, (dict, list)) for x in v):
+                lines.append(f"{prefix}: {', '.join(str(x) for x in v)}")
+            elif isinstance(v, list):
+                for i, x in enumerate(v):
+                    walk(f"{prefix}[{i}]", x)
+            else:
+                lines.append(f"{prefix}: {v}")
+
+        walk("", state)
+        return "\n".join(lines)
+    if isinstance(state, list):
+        return "\n".join(render_state(x) for x in state)
+    return str(state)
+
+
+def _state_text(state: Any) -> str:
+    return render_state(state)
 
 
 def _instr(x: Any) -> str | None:

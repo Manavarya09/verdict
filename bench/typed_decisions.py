@@ -18,7 +18,7 @@ from collections import defaultdict
 import numpy as np
 
 from verdict import Verdict
-from verdict.server import jev_question_to_verdict
+from verdict.server import jev_question_to_verdict, render_state
 
 
 def load():
@@ -50,7 +50,7 @@ def run(model: str | None = None, device: str | None = None, coverage: float = 0
                 g = groups.setdefault(key, {"raw": raw, "train": [], "test": []})
                 q = jev_question_to_verdict(raw)
                 g["q"] = q
-                g[split_name].append((r["state"], _gold(q.kind, gold[qid])))
+                g[split_name].append((render_state(r["state"]), _gold(q.kind, gold[qid])))
     rows = []
     for mode in ["zero-shot", "fitted"]:
         correct = defaultdict(int)

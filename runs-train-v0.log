@@ -66,3 +66,20 @@ step 1500/8418 loss 0.7489 acc 0.724 lr 1.73e-05 1.24s/step eta 143m
 Loading weights:   0%|          | 0/199 [00:00<?, ?it/s]Loading weights: 100%|██████████| 199/199 [00:00<00:00, 4854.15it/s]
 Repo card metadata block was not found. Setting CardData to empty.
 EVAL step 1500: {"banking77": 0.51, "sst5": 0.404, "toxic_chat": 0.8044, "mean": 0.5728}
+step 1550/8418 loss 0.7485 acc 0.728 lr 1.72e-05 1.35s/step eta 154m
+step 1600/8418 loss 0.7035 acc 0.742 lr 1.70e-05 1.34s/step eta 153m
+step 1650/8418 loss 0.7689 acc 0.710 lr 1.69e-05 1.35s/step eta 152m
+step 1700/8418 loss 0.7632 acc 0.711 lr 1.68e-05 1.41s/step eta 158m
+step 1750/8418 loss 0.7499 acc 0.712 lr 1.67e-05 1.43s/step eta 158m
+step 1800/8418 loss 0.8459 acc 0.687 lr 1.65e-05 1.46s/step eta 161m
+step 1850/8418 loss 0.7270 acc 0.702 lr 1.64e-05 1.46s/step eta 159m
+step 1900/8418 loss 0.6483 acc 0.749 lr 1.63e-05 1.47s/step eta 160m
+step 1950/8418 loss 0.6886 acc 0.749 lr 1.62e-05 1.48s/step eta 160m
+step 2000/8418 loss 0.7178 acc 0.775 lr 1.60e-05 1.48s/step eta 159m
+Writing model shards:   0%|          | 0/1 [00:00<?, ?it/s]Writing model shards: 100%|██████████| 1/1 [00:00<00:00,  1.05it/s]Writing model shards: 100%|██████████| 1/1 [00:00<00:00,  1.05it/s]
+Loading weights:   0%|          | 0/199 [00:00<?, ?it/s]Loading weights: 100%|██████████| 199/199 [00:00<00:00, 5606.76it/s]
+Repo card metadata block was not found. Setting CardData to empty.
+Writing model shards:   0%|          | 0/1 [00:00<?, ?it/s]Writing model shards: 100%|██████████| 1/1 [00:00<00:00,  1.64it/s]Writing model shards: 100%|██████████| 1/1 [00:00<00:00,  1.64it/s]
+EVAL step 2000: {"banking77": 0.524, "sst5": 0.42, "toxic_chat": 0.8365, "mean": 0.5935}  <- best
+step 2050/8418 loss 0.6654 acc 0.748 lr 1.59e-05 1.55s/step eta 164m
+step 2100/8418 loss 0.7156 acc 0.724 lr 1.58e-05 1.53s/step eta 161m

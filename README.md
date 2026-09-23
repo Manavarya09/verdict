@@ -186,6 +186,23 @@ conformal threshold fit on that slice only; every number on the untouched test s
 | Banking77, **ONNX int8, CPU only** | 0 | 0.604 | 0.062 | 0.10 | | 0.7 idle* |
 | Banking77, ONNX int8, CPU only | 16 | 0.858 | 0.030 | 0.74 | | 0.7 idle* |
 
+**typed-decisions** (the benchmark Laya and Jev are compared on: 4 workflows, JSON states,
+2,000 test decisions labelled by Jev; random 0.318, majority 0.461):
+
+| model | protocol | accuracy |
+|---|---|---|
+| Jev 1.13 | zero-shot | 0.727 |
+| Laya base | zero-shot | 0.362 |
+| Laya typed-decisions | fine-tuned on the train split | 0.766 |
+| Verdict e5-small | zero-shot, raw JSON state | 0.323 |
+| Verdict step-1,000 checkpoint | zero-shot, raw JSON state | 0.386 |
+| Verdict e5-small + heads | fitted on the train split, raw JSON state | 0.625 |
+| Verdict, full fine-tune with soft targets, `key: value` state rendering | Laya's protocol | _running_ |
+
+We are behind here today. Frozen embeddings of raw JSON lose the fields that decide these
+labels; the two fixes (readable state rendering, full-encoder fine-tune on the split) are in
+`train/finetune_typed.py` and the row updates when the run finishes.
+
 Reference points from published evals: Jev zero-shot Banking77 0.80-0.87, CLINC150 0.87;
 Laya Banking77 0.425, SST-5 0.372, MASSIVE non-English mean 0.451, ToxicChat 0.755.
 

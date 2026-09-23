@@ -1,0 +1,36 @@
+[
+  {
+    "suite": "typed_decisions",
+    "mode": "zero-shot",
+    "engine": "embed:multilingual-e5-small",
+    "decisions": 2000,
+    "accuracy": 0.3225,
+    "automation_rate": 0.058,
+    "accuracy_when_committed": 0.45689655172413796,
+    "ms_per_decision": 241.39,
+    "kind:check": 0.4333,
+    "kind:choose": 0.2333,
+    "kind:score": 0.3063,
+    "wf:agent_trace_observability": 0.312,
+    "wf:customer_service": 0.246,
+    "wf:invoice_processing": 0.36,
+    "wf:security_incidents": 0.372
+  },
+  {
+    "suite": "typed_decisions",
+    "mode": "fitted",
+    "engine": "embed:multilingual-e5-small",
+    "decisions": 2000,
+    "accuracy": 0.6245,
+    "automation_rate": 0.267,
+    "accuracy_when_committed": 0.8277153558052435,
+    "ms_per_decision": 554.19,
+    "kind:check": 0.7483,
+    "kind:choose": 0.5983,
+    "kind:score": 0.5513,
+    "wf:agent_trace_observability": 0.61,
+    "wf:customer_service": 0.644,
+    "wf:invoice_processing": 0.598,
+    "wf:security_incidents": 0.646
+  }
+]
