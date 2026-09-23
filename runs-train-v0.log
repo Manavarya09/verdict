@@ -22,3 +22,6 @@ baseline held-out:
 Repo card metadata block was not found. Setting CardData to empty.
 {"banking77": 0.58, "sst5": 0.294, "toxic_chat": 0.5827, "mean": 0.4856}
 The `tokenize` method is deprecated, please use `preprocess` instead.
+step 50/8418 loss 2.3986 acc 0.356 lr 2.43e-06 0.98s/step eta 137m
+step 100/8418 loss 1.8347 acc 0.444 lr 4.81e-06 0.90s/step eta 125m
+step 150/8418 loss 1.7762 acc 0.491 lr 7.19e-06 0.95s/step eta 131m
