@@ -42,12 +42,15 @@ export class LocalVerdict {
     const tf: any = await import(/* @vite-ignore */ modName);
     let adapter: unknown = null;
     try { adapter = typeof navigator !== "undefined" && (navigator as any).gpu ? await (navigator as any).gpu.requestAdapter() : null; } catch { adapter = null; }
-    const candidates = opts.device && opts.device !== "auto" ? [opts.device] : adapter ? ["webgpu", "wasm"] : ["wasm"];
+    // int8 on WebGPU is imprecise in ONNX Runtime Web; use fp16 there and int8 on WASM unless the caller pins a dtype
+    const candidates: [string, string][] = opts.device && opts.device !== "auto"
+      ? [[opts.device, opts.dtype ?? (opts.device === "webgpu" ? "fp16" : "q8")]]
+      : adapter ? [["webgpu", opts.dtype ?? "fp16"], ["wasm", opts.dtype ?? "q8"]] : [["wasm", opts.dtype ?? "q8"]];
     let extractor: Extractor | undefined;
     let lastErr: unknown;
     let device: LocalOptions["device"] = "wasm";
-    for (const d of candidates) {
-      try { extractor = (await tf.pipeline("feature-extraction", model, { dtype: opts.dtype ?? "q8", device: d })) as Extractor; device = d as LocalOptions["device"]; break; }
+    for (const [d, dtype] of candidates) {
+      try { extractor = (await tf.pipeline("feature-extraction", model, { dtype, device: d })) as Extractor; device = d as LocalOptions["device"]; break; }
       catch (e) { lastErr = e; }
     }
     if (!extractor) throw lastErr instanceof Error ? lastErr : new Error("no available backend");

@@ -109,11 +109,7 @@ d("the courier lost my parcel").confidence.abstain                              
         <h3>Input</h3>
         <textarea id="state">Hi, we were billed twice for March. Please refund the duplicate today or we will cancel our plan.</textarea>
         <div class="examples" id="examples"></div>
-        <div class="tabs" style="margin-top:14px">
-          <button class="tab active" data-tab="choose">choose</button>
-          <button class="tab" data-tab="score">score</button>
-          <button class="tab" data-tab="check">check</button>
-        </div>
+        <div class="tabs" style="margin-top:14px"><span class="tab active">choose</span></div>
         <div data-pane="choose">
           <label>Options, one per line (<code>label: description</code>)</label>
           <textarea id="options">billing: invoices, payments, refunds
@@ -121,9 +117,10 @@ technical: bugs, outages, errors
 sales: pricing, new contracts
 other: everything else</textarea>
           <label>Framing question (optional)</label>
-          <input id="prompt" value="" placeholder="e.g. Which team should handle this? (often better left empty)">
+          <input id="prompt" value="What does the user want?" placeholder="e.g. What does the user want?">
         </div>
-        <div data-pane="score" hidden>
+        <div class="tabs" style="margin-top:14px"><span class="tab active">score</span></div>
+        <div data-pane="score">
           <label>Rubric, one level per line, low to high</label>
           <textarea id="scale">not urgent
 soon
@@ -131,19 +128,23 @@ blocking issue or hard deadline</textarea>
           <label>Framing question (optional)</label>
           <input id="prompt-score" value="How urgent is this?">
         </div>
-        <div data-pane="check" hidden>
+        <div class="tabs" style="margin-top:14px"><span class="tab active">check</span></div>
+        <div data-pane="check">
           <label>Claim about the input</label>
-          <input id="claim" value="the customer threatens to cancel or leave">
+          <input id="claim" value="the customer asks for a refund">
         </div>
-        <div class="cta"><button class="btn primary" id="run" disabled>Decide</button><span class="meta" id="timing"></span></div>
+        <div class="cta"><button class="btn primary" id="run" disabled>Loading model…</button><span class="meta" id="timing">answers update as you type</span></div>
       </div>
       <div class="card" id="out">
-        <h3>Answer</h3>
-        <div id="answer" class="meta">Waiting for the model…</div>
+        <h3>Answers</h3>
+        <div id="answer" class="meta">Loading the model into this tab (118 MB, cached after the first visit)…</div>
+        <div id="a-choose"></div>
+        <div id="a-score" style="margin-top:18px"></div>
+        <div id="a-check" style="margin-top:18px"></div>
         <div class="kpis" id="kpis" hidden>
-          <div class="kpi"><b id="k-top">–</b><span>top probability</span></div>
+          <div class="kpi"><b id="k-top">–</b><span>top probability (choose)</span></div>
           <div class="kpi"><b id="k-margin">–</b><span>margin to 2nd</span></div>
-          <div class="kpi"><b id="k-ms">–</b><span>ms in this tab</span></div>
+          <div class="kpi"><b id="k-ms">–</b><span>ms for all three</span></div>
         </div>
       </div>
     </div>
@@ -228,11 +229,6 @@ const EXAMPLES = [
 ];
 EXAMPLES.forEach(([n, t]) => { const b = document.createElement("button"); b.className = "chip"; b.textContent = n; b.onclick = () => { $("state").value = t; run(); }; $("examples").appendChild(b); });
 
-document.querySelectorAll(".tab").forEach((b) => b.addEventListener("click", () => {
-  tab = b.dataset.tab; document.querySelectorAll(".tab").forEach((x) => x.classList.toggle("active", x === b));
-  document.querySelectorAll("[data-pane]").forEach((p) => p.hidden = p.dataset.pane !== tab); run();
-}));
-
 async function embed(texts, prefix) {
   const todo = texts.filter((t) => !cache.has(prefix + t));
   if (todo.length) {
@@ -245,55 +241,66 @@ async function embed(texts, prefix) {
 const dot = (a, b) => a.reduce((s, x, i) => s + x * b[i], 0);
 const softmax = (z) => { const m = Math.max(...z); const e = z.map((x) => Math.exp(x - m)); const s = e.reduce((a, b) => a + b, 0); return e.map((x) => x / s); };
 
-function bars(labels, probs, extraHtml) {
+function bars(title, labels, probs, extraHtml) {
   const order = probs.map((p, i) => i).sort((a, b) => probs[b] - probs[a]);
-  return order.map((i, r) => `<div class="opt ${r === 0 ? "top" : ""}"><span class="lab" title="${labels[i]}">${labels[i]}</span><div class="bar"><i style="width:${(probs[i] * 100).toFixed(1)}%"></i></div><span>${(probs[i] * 100).toFixed(1)}%</span></div>`).join("") + (extraHtml ? `<div class="meta">${extraHtml}</div>` : "");
-}
-function kpis(probs, ms) {
-  const s = [...probs].sort((a, b) => b - a);
-  $("k-top").textContent = (s[0] * 100).toFixed(1) + "%"; $("k-margin").textContent = ((s[0] - (s[1] ?? 0)) * 100).toFixed(1) + "%"; $("k-ms").textContent = ms.toFixed(0); $("kpis").hidden = false;
+  return `<label>${title}</label>` + order.map((i, r) => `<div class="opt ${r === 0 ? "top" : ""}"><span class="lab" title="${labels[i]}">${labels[i]}</span><div class="bar"><i style="width:${(probs[i] * 100).toFixed(1)}%"></i></div><span>${(probs[i] * 100).toFixed(1)}%</span></div>`).join("") + (extraHtml ? `<div class="meta">${extraHtml}</div>` : "");
 }
 
+let running = false, queued = false;
 async function run() {
   if (!extractor) return;
-  $("run").disabled = true;
+  if (running) { queued = true; return; }
+  running = true;
   const t0 = performance.now();
-  const state = $("state").value.trim();
-  const [x] = await embed([state], "query: ");
-  let html = "";
-  let probs = [];
-  if (tab === "choose") {
+  try {
+    const state = $("state").value.trim();
+    if (!state) { $("answer").textContent = "Type something above."; return; }
+    const [x] = await embed([state], "query: ");
+
+    // choose
     const prompt = $("prompt").value.trim();
     const opts = $("options").value.split("\n").map((l) => l.trim()).filter(Boolean).map((l) => { const i = l.indexOf(":"); return i > 0 ? { label: l.slice(0, i).trim(), text: l.slice(i + 1).trim() } : { label: l, text: l.replace(/[_-]/g, " ") }; });
-    if (opts.length < 2) { html = "<span class='meta'>give at least two options</span>"; }
-    else {
+    let pc = [];
+    if (opts.length >= 2) {
       const O = await embed(opts.map((o) => (prompt ? prompt + " " : "") + o.text), "passage: ");
-      probs = softmax(O.map((o) => dot(o, x) * SCALE));
-      const top = probs.indexOf(Math.max(...probs));
-      const s = [...probs].sort((a, b) => b - a);
-      html = bars(opts.map((o) => o.label), probs, `${s[0] - s[1] < 0.1 ? "<span class='abstain'>would abstain (margin < 0.10, uncalibrated)</span>" : "<span class='commit'>commits</span>"} &nbsp; top: <b>${opts[top].label}</b>`);
-    }
-  } else if (tab === "score") {
-    const prompt = $("prompt-score").value.trim();
+      pc = softmax(O.map((o) => dot(o, x) * SCALE));
+      const top = pc.indexOf(Math.max(...pc));
+      const s = [...pc].sort((a, b) => b - a);
+      $("a-choose").innerHTML = bars("choose", opts.map((o) => o.label), pc, `${s[0] - s[1] < 0.1 ? "<span class='abstain'>would abstain (margin < 0.10)</span>" : "<span class='commit'>commits</span>"} · top: <b>${opts[top].label}</b>`);
+    } else { $("a-choose").innerHTML = "<label>choose</label><span class='meta'>give at least two options</span>"; }
+
+    // score
+    const sp = $("prompt-score").value.trim();
     const levels = $("scale").value.split("\n").map((l) => l.trim()).filter(Boolean);
-    if (levels.length < 2) { html = "<span class='meta'>give at least two levels</span>"; }
-    else {
-      const L = await embed(levels.map((l) => (prompt ? prompt + " " : "") + l), "passage: ");
-      probs = softmax(L.map((l) => dot(l, x) * SCALE));
-      const expected = probs.reduce((s, v, i) => s + v * (i + 1), 0);
-      html = bars(levels.map((l, i) => `${i + 1} · ${l}`), probs, `expected value <b>${expected.toFixed(2)}</b> of ${levels.length}`);
-    }
-  } else {
+    if (levels.length >= 2) {
+      const L = await embed(levels.map((l) => (sp ? sp + " " : "") + l), "passage: ");
+      const p = softmax(L.map((l) => dot(l, x) * SCALE));
+      const expected = p.reduce((s, v, i) => s + v * (i + 1), 0);
+      $("a-score").innerHTML = bars("score", levels.map((l, i) => `${i + 1} · ${l}`), p, `expected value <b>${expected.toFixed(2)}</b> of ${levels.length}`);
+    } else { $("a-score").innerHTML = "<label>score</label><span class='meta'>give at least two levels</span>"; }
+
+    // check
     const claim = $("claim").value.trim();
-    const H = await embed([`It is false that ${claim}`, `It is true that ${claim}`], "passage: ");
-    probs = softmax(H.map((h) => dot(h, x) * SCALE));
-    html = bars(["false", "true"], probs, `P(true) = <b>${probs[1].toFixed(3)}</b> · zero-shot <code>check</code> is the bi-encoder's weakest mode; the package's reranker or 16 labels fix it`);
+    if (claim) {
+      const H = await embed([`It is false that ${claim}`, `It is true that ${claim}`], "passage: ");
+      const p = softmax(H.map((h) => dot(h, x) * SCALE));
+      $("a-check").innerHTML = bars("check", ["false", "true"], p, `P(true) = <b>${p[1].toFixed(3)}</b>`);
+    } else { $("a-check").innerHTML = ""; }
+
+    const ms = performance.now() - t0;
+    $("answer").textContent = "";
+    if (pc.length) { const s = [...pc].sort((a, b) => b - a); $("k-top").textContent = (s[0] * 100).toFixed(1) + "%"; $("k-margin").textContent = ((s[0] - (s[1] ?? 0)) * 100).toFixed(1) + "%"; $("k-ms").textContent = ms.toFixed(0); $("kpis").hidden = false; }
+    $("timing").textContent = `${ms.toFixed(0)} ms · answers update as you type`;
+  } catch (e) {
+    $("answer").innerHTML = `<span class="abstain">error: ${e.message}</span>`;
+    console.error(e);
+  } finally {
+    running = false;
+    if (queued) { queued = false; run(); }
   }
-  const ms = performance.now() - t0;
-  $("answer").innerHTML = html; if (probs.length) kpis(probs, ms);
-  $("timing").textContent = `${ms.toFixed(0)} ms`;
-  $("run").disabled = false;
 }
+let debounce;
+const schedule = () => { clearTimeout(debounce); debounce = setTimeout(run, 350); };
 
 // cascade calculator: measured Banking77 16-shot rows at several coverages (automation, acc when committed)
 // results/2026-09-23-banking77-16shot-coverage-sweep.json (automation, accuracy when committed)
@@ -315,23 +322,24 @@ function cascade() {
 
 (async () => {
   const MODEL = "Manav2op/verdict-small";
-  const progress = (p) => { if (p.status === "progress") $("status-text").textContent = `downloading verdict-small ${Math.round(p.progress || 0)}%`; };
+  const progress = (p) => { if (p.status === "progress") { const pct = Math.round(p.progress || 0); $("status-text").textContent = `downloading verdict-small ${pct}%`; $("run").textContent = `Loading model ${pct}%`; } };
   // probe for a real adapter first: initialising the runtime with WebGPU and failing poisons later WASM attempts
   let adapter = null;
   try { adapter = navigator.gpu ? await navigator.gpu.requestAdapter() : null; } catch (e) { adapter = null; }
-  const devices = adapter ? ["webgpu", "wasm"] : ["wasm"];
+  // int8 kernels on WebGPU are imprecise in ONNX Runtime Web (flat, wrong probabilities), so WebGPU gets fp16 and WASM gets int8
+  const devices = adapter ? [["webgpu", "fp16"], ["wasm", "q8"]] : [["wasm", "q8"]];
   let used = null;
   try {
-    for (const device of devices) {
-      try { extractor = await pipeline("feature-extraction", MODEL, { dtype: "q8", device, progress_callback: progress }); used = device; break; }
+    for (const [device, dtype] of devices) {
+      try { extractor = await pipeline("feature-extraction", MODEL, { dtype, device, progress_callback: progress }); used = device; break; }
       catch (e) { console.warn(`${device} failed, falling back:`, e.message); }
     }
     if (!extractor) throw new Error("no available backend (WebGPU and WASM both failed)");
-    $("status").classList.add("ready"); $("status-text").textContent = `verdict-small ready · ${used === "webgpu" ? "WebGPU" : "WASM"} · 118M params in this tab`;
-    $("run").disabled = false; $("run").addEventListener("click", run);
-    ["state", "options", "prompt", "prompt-score", "scale", "claim"].forEach((id) => $(id).addEventListener("keydown", (e) => { if ((e.metaKey || e.ctrlKey) && e.key === "Enter") run(); }));
+    $("status").classList.add("ready"); $("status-text").textContent = `verdict-small ready · ${used === "webgpu" ? "WebGPU fp16" : "WASM int8"} · 118M params in this tab`;
+    $("run").disabled = false; $("run").textContent = "Decide"; $("run").addEventListener("click", run);
+    ["state", "options", "prompt", "prompt-score", "scale", "claim"].forEach((id) => $(id).addEventListener("input", schedule));
     run();
-  } catch (e) { $("status-text").textContent = "failed to load: " + e.message; }
+  } catch (e) { $("status-text").textContent = "failed to load: " + e.message; $("answer").innerHTML = `<span class="abstain">The model could not load in this browser: ${e.message}. Try Chrome or Safari 17+, or use the Python package.</span>`; $("run").textContent = "Model failed to load"; }
 })();
 </script>
 </body>
