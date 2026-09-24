@@ -1,8 +1,8 @@
-<p align="center"><img src="docs/assets/banner.svg" alt="verdict: small, fast, honest decision models" width="100%"></p>
+<p align="center"><img src="https://raw.githubusercontent.com/Manavarya09/verdict/main/docs/assets/banner.svg" alt="verdict: small, fast, honest decision models" width="100%"></p>
 
 <p align="center">
   <a href="https://github.com/Manavarya09/verdict/actions/workflows/ci.yml"><img src="https://github.com/Manavarya09/verdict/actions/workflows/ci.yml/badge.svg" alt="ci"></a>
-  <a href="LICENSE"><img src="https://img.shields.io/badge/license-Apache--2.0-blue.svg" alt="license"></a>
+  <a href="https://github.com/Manavarya09/verdict/blob/main/LICENSE"><img src="https://img.shields.io/badge/license-Apache--2.0-blue.svg" alt="license"></a>
   <a href="https://manavarya09.github.io/verdict/"><img src="https://img.shields.io/badge/demo-runs%20in%20your%20browser-6ee7c8" alt="demo"></a>
 </p>
 
@@ -42,7 +42,7 @@ built around closing them:
 | Option order changes the answer | yes, log-odds shift 0.3-0.5 | yes, flip rate up to 0.23 | yes, 13.75 pp in a third-party test | **no, by construction** |
 
 Jev, Laya and kev numbers are from their own docs and published third-party evals; see
-[docs/RESEARCH.md](docs/RESEARCH.md). Verdict numbers are from [`bench/`](bench/) and
+[docs/RESEARCH.md](https://github.com/Manavarya09/verdict/blob/main/docs/RESEARCH.md). Verdict numbers are from [`bench/`](https://github.com/Manavarya09/verdict/blob/main/bench/) and
 reproducible with one command below.
 
 ## The honest-probability part
@@ -222,7 +222,7 @@ conformal threshold fit on that slice only; every number on the untouched test s
 
 On jevbench's public tiers (mostly knowledge and multi-hop items) verdict-small scores 0.94 / 0.49 / 0.40
 on easy / original / hard: routing and intent items are fine, reasoning items are not. Full table in
-[docs/BENCHMARKS.md](docs/BENCHMARKS.md).
+[docs/BENCHMARKS.md](https://github.com/Manavarya09/verdict/blob/main/docs/BENCHMARKS.md).
 
 We are behind here and we know why. These states are JSON records, and the label depends on
 reading fields *together with* the options ("constraint_violations: 0" plus "harmful"). A
@@ -241,7 +241,7 @@ dipped from 0.594 to 0.556, which the next run addresses with a lower learning r
 Where we lose, in plain words: **zero-shot on `score` and `check` questions is weak with
 the default bi-encoder** (SST-5 0.27, ToxicChat AUROC 0.59). A cross-encoder reranker helps
 (`Verdict(reranker=...)`: Banking77 zero-shot 0.594 to 0.650, at ~30 ms instead of 0.6 ms);
-the trained-encoder track in [docs/PLAN.md](docs/PLAN.md) is the real answer. Sixteen labels
+the trained-encoder track in [docs/PLAN.md](https://github.com/Manavarya09/verdict/blob/main/docs/PLAN.md) is the real answer. Sixteen labels
 per class fixes all of it, and the full ToxicChat train set reaches AUROC 0.955.
 
 \* ONNX rows were measured while a training run occupied the machine (16 ms/example then); 0.7 ms/example batched on an idle M5 CPU.
@@ -250,7 +250,7 @@ per class fixes all of it, and the full ToxicChat train set reaches AUROC 0.955.
 changing accuracy. Apple M5, `intfloat/multilingual-e5-small`, batched.
 
 We publish the rows we lose too. Zero-shot on fine-grained intent sets is where a bigger
-cross-encoder still wins; that is the trained-encoder track in [docs/PLAN.md](docs/PLAN.md).
+cross-encoder still wins; that is the trained-encoder track in [docs/PLAN.md](https://github.com/Manavarya09/verdict/blob/main/docs/PLAN.md).
 
 ## How it works
 
