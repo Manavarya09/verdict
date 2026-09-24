@@ -314,10 +314,17 @@ function cascade() {
 ["cov", "vol", "llmcost"].forEach((id) => $(id).addEventListener("input", cascade)); cascade();
 
 (async () => {
+  const MODEL = "Manav2op/verdict-small";
+  const progress = (p) => { if (p.status === "progress") $("status-text").textContent = `downloading verdict-small ${Math.round(p.progress || 0)}%`; };
+  const devices = navigator.gpu ? ["webgpu", "wasm"] : ["wasm"];
+  let used = null;
   try {
-    extractor = await pipeline("feature-extraction", "Manav2op/verdict-small", { dtype: "q8", device: navigator.gpu ? "webgpu" : "wasm",
-      progress_callback: (p) => { if (p.status === "progress") $("status-text").textContent = `downloading model ${Math.round(p.progress || 0)}%`; } });
-    $("status").classList.add("ready"); $("status-text").textContent = `verdict-small ready · ${navigator.gpu ? "WebGPU" : "WASM"} · 118M params in this tab`;
+    for (const device of devices) {
+      try { extractor = await pipeline("feature-extraction", MODEL, { dtype: "q8", device, progress_callback: progress }); used = device; break; }
+      catch (e) { console.warn(`${device} failed, falling back:`, e.message); }
+    }
+    if (!extractor) throw new Error("no available backend (WebGPU and WASM both failed)");
+    $("status").classList.add("ready"); $("status-text").textContent = `verdict-small ready · ${used === "webgpu" ? "WebGPU" : "WASM"} · 118M params in this tab`;
     $("run").disabled = false; $("run").addEventListener("click", run);
     ["state", "options", "prompt", "prompt-score", "scale", "claim"].forEach((id) => $(id).addEventListener("keydown", (e) => { if ((e.metaKey || e.ctrlKey) && e.key === "Enter") run(); }));
     run();

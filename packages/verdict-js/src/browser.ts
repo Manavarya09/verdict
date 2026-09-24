@@ -40,11 +40,19 @@ export class LocalVerdict {
     const model = opts.model ?? "Manav2op/verdict-small";
     const modName = "@huggingface/transformers"; // resolved at runtime; optional peer dependency
     const tf: any = await import(/* @vite-ignore */ modName);
-    const device = opts.device ?? (typeof navigator !== "undefined" && (navigator as any).gpu ? "webgpu" : "wasm");
-    const extractor = (await tf.pipeline("feature-extraction", model, { dtype: opts.dtype ?? "q8", device })) as Extractor;
+    const hasGpu = typeof navigator !== "undefined" && (navigator as any).gpu;
+    const candidates = opts.device && opts.device !== "auto" ? [opts.device] : hasGpu ? ["webgpu", "wasm"] : ["wasm"];
+    let extractor: Extractor | undefined;
+    let lastErr: unknown;
+    let device: LocalOptions["device"] = "wasm";
+    for (const d of candidates) {
+      try { extractor = (await tf.pipeline("feature-extraction", model, { dtype: opts.dtype ?? "q8", device: d })) as Extractor; device = d as LocalOptions["device"]; break; }
+      catch (e) { lastErr = e; }
+    }
+    if (!extractor) throw lastErr instanceof Error ? lastErr : new Error("no available backend");
     const isE5 = /e5|verdict/i.test(model);
     return new LocalVerdict(extractor, {
-      model, device, dtype: opts.dtype ?? "q8",
+      model, device: device!, dtype: opts.dtype ?? "q8",
       queryPrefix: opts.queryPrefix ?? (isE5 ? "query: " : ""),
       passagePrefix: opts.passagePrefix ?? (isE5 ? "passage: " : ""),
       abstainMargin: opts.abstainMargin ?? 0.1,
