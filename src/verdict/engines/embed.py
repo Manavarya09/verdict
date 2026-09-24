@@ -20,7 +20,7 @@ from ..types import Decision, Question
 from .base import Engine, EngineOutput
 from .device import pick_device
 
-DEFAULT_EMBED_MODEL = "intfloat/multilingual-e5-small"
+DEFAULT_EMBED_MODEL = "verdict-small"  # our trained encoder; base is intfloat/multilingual-e5-small
 
 # Prefixes expected by the e5 family; other models get empty prefixes.
 _PREFIXES = {

@@ -356,7 +356,7 @@ class Verdict:
         if engine == "onnx":
             from .engines.onnx import DEFAULT_ONNX_MODEL, OnnxEmbedEngine
 
-            self.engine = OnnxEmbedEngine(model=DEFAULT_ONNX_MODEL if model == DEFAULT_EMBED_MODEL else model)
+            self.engine = OnnxEmbedEngine(model=DEFAULT_ONNX_MODEL if model in (DEFAULT_EMBED_MODEL, "intfloat/multilingual-e5-small") else model)
         else:
             self.engine = EmbedEngine(model=model, device=device)
         self.reranker: Engine | None = None

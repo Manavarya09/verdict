@@ -12,7 +12,7 @@ Replace LLM calls for routing, guardrails, triage and policy checks with typed a
 ```python
 from verdict import Verdict
 
-v = Verdict()                                                      # 118M params, 100+ languages, CPU is fine
+v = Verdict()                                                      # verdict-small: 118M params, 100+ languages, CPU is fine
 v.choose("Billed twice, refund or we cancel", ["billing", "technical", "sales"])   # -> billing  p=0.71
 v.score("Great product, slow delivery", scale=(1, 5))                             # -> 4  expected 3.6
 v.check("Can I talk to a person?", claim="the user asks for a human")             # -> True p=0.84
@@ -27,20 +27,21 @@ TypeSafe's **Jev** (closed, hosted) and **Laya** (open, 421M ModernBERT) made "S
 decision models a category in September 2026. Both have the same three gaps, and Verdict is
 built around closing them:
 
-| | Jev | Laya | **Verdict** |
-|---|---|---|---|
-| Zero-shot, Banking77 (77 intents) | 0.80-0.87 | 0.425 | **0.594** |
-| Trained on your labels | not possible | 4-5 h on 2xT4 | **0.9 s on a laptop CPU** (16 labels/class) |
-| Accuracy after training, Banking77 | 0.80-0.87 (zero-shot only) | 0.425 | **0.858** with 16 labels/class, **0.913** full |
-| Calibration (ECE, lower is better) | 0.144-0.246 | 0.466 as shipped | **0.014-0.020** |
-| "I don't know" | opaque confidence | `act_probability` always 1.0 | **conformal abstain with a coverage guarantee** |
-| Max options | 255 | ~20 before degrading | **unbounded** (options embedded once, cached) |
-| Languages | English first | English ckpt fails silently on non-Latin | **100+** (multilingual encoder) |
-| Latency | 70-500 ms network | 33 ms GPU, 329 ms+ CPU | **0.5 ms/example batched (M-series), single-digit ms CPU** |
-| Weights, data, training code | closed | weights only | **all open, Apache-2.0** |
-| Wire format | `/v1/systemone` | `/v1/systemone` | **`/v1/systemone` compatible** + native API |
+| | Jev | Laya | kev | **Verdict** |
+|---|---|---|---|---|
+| Zero-shot, Banking77 (77 intents) | 0.80-0.87 | 0.425 | 0.425 (third-party) | **0.594** base, 0.556 trained |
+| Trained on your labels | not possible | 4-5 h on 2xT4 | delta fine-tune, GPU | **0.9 s on a laptop CPU** (16 labels/class) |
+| Accuracy after training, Banking77 | 0.80-0.87 (zero-shot only) | 0.425 | not reported | **0.858** with 16 labels/class, **0.913** full |
+| Calibration (ECE, lower is better) | 0.144-0.246 | 0.466 as shipped | "still a bit overconfident" (author) | **0.014-0.030** |
+| "I don't know" | opaque confidence | `act_probability` always 1.0 | threshold on confidence | **conformal abstain with a coverage guarantee** |
+| Max options | 255 | ~20 before degrading | collapses past ~20 | **unbounded** (options embedded once, cached) |
+| Languages | English first | English ckpt fails silently on non-Latin | English | **100+** (multilingual encoder) |
+| Latency | 70-500 ms network | 33 ms GPU, 329 ms+ CPU | 12-26 ms H100, 780 ms M5 | **0.5 ms/example batched (M-series), single-digit ms CPU** |
+| Weights, data, training code | closed | weights only | all open | **all open, Apache-2.0** |
+| Wire format | `/v1/systemone` | `/v1/systemone` | `/v1/systemone` | **`/v1/systemone` compatible** + native API + MCP |
+| Option order changes the answer | yes, log-odds shift 0.3-0.5 | yes, flip rate up to 0.23 | yes, 13.75 pp in a third-party test | **no, by construction** |
 
-Jev and Laya numbers are from their own docs and published third-party evals; see
+Jev, Laya and kev numbers are from their own docs and published third-party evals; see
 [docs/RESEARCH.md](docs/RESEARCH.md). Verdict numbers are from [`bench/`](bench/) and
 reproducible with one command below.
 
@@ -142,6 +143,20 @@ These are the exact weights the browser playground runs.
 
 Inputs longer than the encoder window are chunked with overlap, embedded, mean-pooled and
 re-normalised. A twenty-page document becomes one vector instead of a silently truncated one.
+
+## As an agent tool (MCP)
+
+```bash
+pip install "verdictml[mcp]"
+verdict mcp
+```
+
+```json
+{"mcpServers": {"verdict": {"command": "verdict", "args": ["mcp"]}}}
+```
+
+Three tools, `choose`, `score`, `check`, for Claude Desktop, Claude Code, Cursor or any MCP
+client. Give an agent a fast, calibrated judgement call instead of another LLM round trip.
 
 ## CLI
 
