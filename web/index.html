@@ -246,7 +246,8 @@ function bars(title, labels, probs, extraHtml) {
   return `<label>${title}</label>` + order.map((i, r) => `<div class="opt ${r === 0 ? "top" : ""}"><span class="lab" title="${labels[i]}">${labels[i]}</span><div class="bar"><i style="width:${(probs[i] * 100).toFixed(1)}%"></i></div><span>${(probs[i] * 100).toFixed(1)}%</span></div>`).join("") + (extraHtml ? `<div class="meta">${extraHtml}</div>` : "");
 }
 
-let running = false, queued = false;
+let running = false, queued = false, usedDevice = null, fellBack = false;
+const MODEL = "Manav2op/verdict-small";
 async function run() {
   if (!extractor) return;
   if (running) { queued = true; return; }
@@ -292,8 +293,21 @@ async function run() {
     if (pc.length) { const s = [...pc].sort((a, b) => b - a); $("k-top").textContent = (s[0] * 100).toFixed(1) + "%"; $("k-margin").textContent = ((s[0] - (s[1] ?? 0)) * 100).toFixed(1) + "%"; $("k-ms").textContent = ms.toFixed(0); $("kpis").hidden = false; }
     $("timing").textContent = `${ms.toFixed(0)} ms · answers update as you type`;
   } catch (e) {
-    $("answer").innerHTML = `<span class="abstain">error: ${e.message}</span>`;
     console.error(e);
+    if (usedDevice === "webgpu" && !fellBack) {
+      // a WebGPU kernel failed at inference time: switch to WASM int8 and retry once
+      fellBack = true;
+      $("answer").innerHTML = `<span class="meta">WebGPU kernel failed (${e.message}); switching to WASM…</span>`;
+      try {
+        cache.clear();
+        extractor = await pipeline("feature-extraction", MODEL, { dtype: "q8", device: "wasm" });
+        usedDevice = "wasm";
+        $("status-text").textContent = "verdict-small ready · WASM int8 (WebGPU fell back) · 118M params in this tab";
+        running = false; return run();
+      } catch (e2) { $("answer").innerHTML = `<span class="abstain">error: ${e2.message}</span>`; }
+    } else {
+      $("answer").innerHTML = `<span class="abstain">error: ${e.message}</span>`;
+    }
   } finally {
     running = false;
     if (queued) { queued = false; run(); }
@@ -321,7 +335,6 @@ function cascade() {
 ["cov", "vol", "llmcost"].forEach((id) => $(id).addEventListener("input", cascade)); cascade();
 
 (async () => {
-  const MODEL = "Manav2op/verdict-small";
   const progress = (p) => { if (p.status === "progress") { const pct = Math.round(p.progress || 0); $("status-text").textContent = `downloading verdict-small ${pct}%`; $("run").textContent = `Loading model ${pct}%`; } };
   // probe for a real adapter first: initialising the runtime with WebGPU and failing poisons later WASM attempts
   let adapter = null;
@@ -331,7 +344,7 @@ function cascade() {
   let used = null;
   try {
     for (const [device, dtype] of devices) {
-      try { extractor = await pipeline("feature-extraction", MODEL, { dtype, device, progress_callback: progress }); used = device; break; }
+      try { extractor = await pipeline("feature-extraction", MODEL, { dtype, device, progress_callback: progress }); used = device; usedDevice = device; break; }
       catch (e) { console.warn(`${device} failed, falling back:`, e.message); }
     }
     if (!extractor) throw new Error("no available backend (WebGPU and WASM both failed)");
