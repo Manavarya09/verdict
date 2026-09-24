@@ -248,6 +248,7 @@ function bars(title, labels, probs, extraHtml) {
 
 let running = false, queued = false, usedDevice = null, fellBack = false;
 const MODEL = "Manav2op/verdict-small";
+const REVISION = "v0.1"; // pinned Hub tag: cache-busts browsers that fetched an earlier build
 async function run() {
   if (!extractor) return;
   if (running) { queued = true; return; }
@@ -300,7 +301,7 @@ async function run() {
       $("answer").innerHTML = `<span class="meta">WebGPU kernel failed (${e.message}); switching to WASM…</span>`;
       try {
         cache.clear();
-        extractor = await pipeline("feature-extraction", MODEL, { dtype: "q8", device: "wasm" });
+        extractor = await pipeline("feature-extraction", MODEL, { dtype: "q8", device: "wasm", revision: REVISION });
         usedDevice = "wasm";
         $("status-text").textContent = "verdict-small ready · WASM int8 (WebGPU fell back) · 118M params in this tab";
         running = false; return run();
@@ -344,7 +345,7 @@ function cascade() {
   let used = null;
   try {
     for (const [device, dtype] of devices) {
-      try { extractor = await pipeline("feature-extraction", MODEL, { dtype, device, progress_callback: progress }); used = device; usedDevice = device; break; }
+      try { extractor = await pipeline("feature-extraction", MODEL, { dtype, device, revision: REVISION, progress_callback: progress }); used = device; usedDevice = device; break; }
       catch (e) { console.warn(`${device} failed, falling back:`, e.message); }
     }
     if (!extractor) throw new Error("no available backend (WebGPU and WASM both failed)");
