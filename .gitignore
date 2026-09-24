@@ -13,3 +13,4 @@ data/cache/
 *.onnx
 .env
 node_modules/
+docs/DISTRIBUTION.md
