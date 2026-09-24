@@ -183,6 +183,11 @@ conformal threshold fit on that slice only; every number on the untouched test s
 | SST-5, + `mDeBERTa-v3-base-xnli` reranker | 0 | 0.349 | | | | 98 |
 | ToxicChat, + `deberta-v3-base-zeroshot-v2.0` reranker | 0 | AUROC 0.69 | | | | 127 |
 | ToxicChat, + `mDeBERTa-v3-base-xnli` reranker | 0 | AUROC 0.46 | | | | 59 |
+| **verdict-small** (trained encoder), Banking77, full test 3,076 | 0 | 0.556 | 0.030 | 0.07 | 0.985 | 0.6 |
+| verdict-small, Banking77 | 16 | 0.842 | 0.020 | 0.75 | 0.944 | 0.6 |
+| verdict-small, SST-5, full test 2,210 | 0 | **0.403** | 0.024 | | | 0.9 |
+| verdict-small, ToxicChat, full test 5,083 | 0 | **AUROC 0.892**, acc 0.894 | 0.015 | | | 2.5 |
+| verdict-small, ToxicChat | 16 | AUROC 0.939 | 0.014 | 0.93 | | 2.5 |
 | Banking77, **ONNX int8, CPU only** | 0 | 0.604 | 0.062 | 0.10 | | 0.7 idle* |
 | Banking77, ONNX int8, CPU only | 16 | 0.858 | 0.030 | 0.74 | | 0.7 idle* |
 
@@ -206,6 +211,11 @@ the size-matched row updates when it finishes.
 
 Reference points from published evals: Jev zero-shot Banking77 0.80-0.87, CLINC150 0.87;
 Laya Banking77 0.425, SST-5 0.372, MASSIVE non-English mean 0.451, ToxicChat 0.755.
+
+`verdict-small` is `multilingual-e5-small` trained for 2,000 steps on the typed-decision mix in
+`train/` (Banking77, SST-5 and ToxicChat never in the mix). Load it with `Verdict(model="verdict-small")`.
+Zero-shot `check` went from AUROC 0.59 to 0.89 and `score` from 0.27 to 0.40; intent zero-shot
+dipped from 0.594 to 0.556, which the next run addresses with a lower learning rate.
 
 Where we lose, in plain words: **zero-shot on `score` and `check` questions is weak with
 the default bi-encoder** (SST-5 0.27, ToxicChat AUROC 0.59). A cross-encoder reranker helps

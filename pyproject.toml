@@ -27,6 +27,7 @@ dependencies = [
 
 [project.optional-dependencies]
 serve = ["fastapi>=0.110", "uvicorn>=0.29"]
+mcp = ["mcp>=1.2"]
 onnx = ["onnxruntime>=1.18", "tokenizers>=0.19"]
 export = ["optimum-onnx>=0.1", "onnx>=1.16", "onnxruntime>=1.18", "accelerate>=0.30"]
 train = ["datasets>=2.20", "scikit-learn>=1.4", "accelerate>=0.30"]

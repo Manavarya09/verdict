@@ -144,6 +144,14 @@ def serve(
 
 
 @app.command()
+def mcp(model: str | None = typer.Option(None)):
+    """Run Verdict as an MCP server (stdio) so agents can call choose / score / check as tools."""
+    from .mcp_server import main as _main
+
+    _main(model)
+
+
+@app.command()
 def bench(
     suite: str = typer.Argument("banking77", help="banking77 | clinc150 | massive | all"),
     n: int = typer.Option(1000, help="Test examples per suite (0 = all)."),
