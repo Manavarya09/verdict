@@ -316,7 +316,10 @@ function cascade() {
 (async () => {
   const MODEL = "Manav2op/verdict-small";
   const progress = (p) => { if (p.status === "progress") $("status-text").textContent = `downloading verdict-small ${Math.round(p.progress || 0)}%`; };
-  const devices = navigator.gpu ? ["webgpu", "wasm"] : ["wasm"];
+  // probe for a real adapter first: initialising the runtime with WebGPU and failing poisons later WASM attempts
+  let adapter = null;
+  try { adapter = navigator.gpu ? await navigator.gpu.requestAdapter() : null; } catch (e) { adapter = null; }
+  const devices = adapter ? ["webgpu", "wasm"] : ["wasm"];
   let used = null;
   try {
     for (const device of devices) {

@@ -40,8 +40,9 @@ export class LocalVerdict {
     const model = opts.model ?? "Manav2op/verdict-small";
     const modName = "@huggingface/transformers"; // resolved at runtime; optional peer dependency
     const tf: any = await import(/* @vite-ignore */ modName);
-    const hasGpu = typeof navigator !== "undefined" && (navigator as any).gpu;
-    const candidates = opts.device && opts.device !== "auto" ? [opts.device] : hasGpu ? ["webgpu", "wasm"] : ["wasm"];
+    let adapter: unknown = null;
+    try { adapter = typeof navigator !== "undefined" && (navigator as any).gpu ? await (navigator as any).gpu.requestAdapter() : null; } catch { adapter = null; }
+    const candidates = opts.device && opts.device !== "auto" ? [opts.device] : adapter ? ["webgpu", "wasm"] : ["wasm"];
     let extractor: Extractor | undefined;
     let lastErr: unknown;
     let device: LocalOptions["device"] = "wasm";
