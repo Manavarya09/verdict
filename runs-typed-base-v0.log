@@ -1,21 +1,53 @@
 train decisions 6000  test decisions 2000  device mps
+frozen token embeddings: 192M params
 The `tokenize` method is deprecated, please use `preprocess` instead.
 before: {'all': 0.296, 'choose': 0.2083, 'check': 0.3917, 'score': 0.29}
-ep 0 step 50/2253 loss 0.9611 1.51s/step
-ep 0 step 100/2253 loss 1.0227 1.47s/step
-ep 0 step 150/2253 loss 1.1777 1.46s/step
-Traceback (most recent call last):
-  File "<frozen runpy>", line 198, in _run_module_as_main
-  File "<frozen runpy>", line 88, in _run_code
-  File "/Users/manavarya-intern/verdict/train/finetune_typed.py", line 160, in <module>
-    main()
-  File "/Users/manavarya-intern/verdict/train/finetune_typed.py", line 143, in main
-    loss.backward()
-  File "/Users/manavarya-intern/verdict/.venv/lib/python3.12/site-packages/torch/_tensor.py", line 623, in backward
-    torch.autograd.backward(
-  File "/Users/manavarya-intern/verdict/.venv/lib/python3.12/site-packages/torch/autograd/__init__.py", line 395, in backward
-    _engine_run_backward(
-  File "/Users/manavarya-intern/verdict/.venv/lib/python3.12/site-packages/torch/autograd/graph.py", line 1072, in _engine_run_backward
-    return Variable._execution_engine.run_backward(  # Calls into the C++ engine to run the backward pass
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-RuntimeError: MPS backend out of memory (MPS allocated: 10.12 GiB, other allocations: 14.30 MiB, max allowed: 10.66 GiB). Tried to allocate 736.00 MiB on shared pool. Use PYTORCH_MPS_HIGH_WATERMARK_RATIO=0.0 to disable upper limit for memory allocations (may cause system failure).
+ep 0 step 50/2253 loss 0.9748 0.82s/step
+ep 0 step 100/2253 loss 1.0107 0.88s/step
+ep 0 step 150/2253 loss 1.1437 0.93s/step
+ep 0 step 200/2253 loss 0.9813 0.95s/step
+ep 0 step 250/2253 loss 1.1441 0.96s/step
+ep 0 step 300/2253 loss 1.0488 0.97s/step
+ep 0 step 350/2253 loss 0.9478 0.98s/step
+ep 0 step 400/2253 loss 1.1602 0.98s/step
+ep 0 step 450/2253 loss 1.0637 0.99s/step
+ep 0 step 500/2253 loss 1.0620 0.99s/step
+ep 0 step 550/2253 loss 1.1599 0.99s/step
+ep 0 step 600/2253 loss 1.1247 1.01s/step
+ep 0 step 650/2253 loss 1.2555 1.01s/step
+ep 0 step 700/2253 loss 0.6996 1.00s/step
+ep 0 step 750/2253 loss 0.9717 1.00s/step
+EVAL epoch 0: {"all": 0.659, "choose": 0.6517, "check": 0.7533, "score": 0.5938}
+ep 1 step 800/2253 loss 0.7598 0.99s/step
+ep 1 step 850/2253 loss 0.8276 0.99s/step
+ep 1 step 900/2253 loss 0.9204 0.98s/step
+ep 1 step 950/2253 loss 0.7733 0.98s/step
+ep 1 step 1000/2253 loss 0.9712 0.98s/step
+ep 1 step 1050/2253 loss 1.0907 0.99s/step
+ep 1 step 1100/2253 loss 0.8344 0.99s/step
+ep 1 step 1150/2253 loss 0.9731 0.99s/step
+ep 1 step 1200/2253 loss 0.6594 0.99s/step
+ep 1 step 1250/2253 loss 0.7392 1.00s/step
+ep 1 step 1300/2253 loss 0.8888 1.01s/step
+ep 1 step 1350/2253 loss 1.1334 1.01s/step
+ep 1 step 1400/2253 loss 0.9153 1.01s/step
+ep 1 step 1450/2253 loss 0.7208 1.01s/step
+ep 1 step 1500/2253 loss 0.7969 1.00s/step
+EVAL epoch 1: {"all": 0.696, "choose": 0.655, "check": 0.7817, "score": 0.6625}
+ep 2 step 1550/2253 loss 0.7251 1.01s/step
+ep 2 step 1600/2253 loss 0.7948 1.01s/step
+ep 2 step 1650/2253 loss 0.8718 1.01s/step
+ep 2 step 1700/2253 loss 0.6609 1.01s/step
+ep 2 step 1750/2253 loss 0.9176 1.01s/step
+ep 2 step 1800/2253 loss 0.7529 1.01s/step
+ep 2 step 1850/2253 loss 0.8551 1.02s/step
+ep 2 step 1900/2253 loss 0.9484 1.02s/step
+ep 2 step 1950/2253 loss 0.9777 1.02s/step
+ep 2 step 2000/2253 loss 0.9345 1.02s/step
+ep 2 step 2050/2253 loss 0.7789 1.02s/step
+ep 2 step 2100/2253 loss 0.8399 1.02s/step
+ep 2 step 2150/2253 loss 0.8203 1.02s/step
+ep 2 step 2200/2253 loss 1.1818 1.02s/step
+ep 2 step 2250/2253 loss 0.6868 1.03s/step
+EVAL epoch 2: {"all": 0.7055, "choose": 0.6817, "check": 0.8033, "score": 0.65}
+done. best typed-decisions accuracy 0.7055
