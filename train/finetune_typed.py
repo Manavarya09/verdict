@@ -68,6 +68,7 @@ def main():
     ap.add_argument("--max-len", type=int, default=384)
     ap.add_argument("--device", default=None)
     ap.add_argument("--hard", action="store_true", help="use argmax labels instead of soft targets")
+    ap.add_argument("--train-embeddings", action="store_true", help="also train the token embedding matrix (memory-heavy on 250k vocabs)")
     a = ap.parse_args()
     dev = a.device or ("mps" if torch.backends.mps.is_available() else "cpu")
     train, test = load()
@@ -85,7 +86,11 @@ def main():
     print(f"train decisions {len(tr_rows)}  test decisions {len(te_rows)}  device {dev}", flush=True)
     model = SentenceTransformer(a.base, device=dev)
     qp, pp = _prefixes_for(a.base)
-    opt = torch.optim.AdamW(model.parameters(), lr=a.lr, weight_decay=0.01)
+    if not a.train_embeddings:
+        emb = model[0].auto_model.get_input_embeddings()
+        emb.weight.requires_grad_(False)
+        print(f"frozen token embeddings: {emb.weight.numel()/1e6:.0f}M params", flush=True)
+    opt = torch.optim.AdamW([p for p in model.parameters() if p.requires_grad], lr=a.lr, weight_decay=0.01)
     total = (len(tr_rows) // a.bs + 1) * a.epochs
     sched = torch.optim.lr_scheduler.LambdaLR(opt, lambda s: min(1.0, (s + 1) / max(1, int(0.06 * total))) * max(0.0, (total - s) / total))
 

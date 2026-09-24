@@ -1,4 +1,21 @@
 train decisions 6000  test decisions 2000  device mps
 The `tokenize` method is deprecated, please use `preprocess` instead.
-before: {'all': 0.306, 'choose': 0.2183, 'check': 0.3833, 'score': 0.3137}
-ep 0 step 50/1504 loss 1.0263 4.16s/step
+before: {'all': 0.296, 'choose': 0.2083, 'check': 0.3917, 'score': 0.29}
+ep 0 step 50/2253 loss 0.9611 1.51s/step
+ep 0 step 100/2253 loss 1.0227 1.47s/step
+ep 0 step 150/2253 loss 1.1777 1.46s/step
+Traceback (most recent call last):
+  File "<frozen runpy>", line 198, in _run_module_as_main
+  File "<frozen runpy>", line 88, in _run_code
+  File "/Users/manavarya-intern/verdict/train/finetune_typed.py", line 160, in <module>
+    main()
+  File "/Users/manavarya-intern/verdict/train/finetune_typed.py", line 143, in main
+    loss.backward()
+  File "/Users/manavarya-intern/verdict/.venv/lib/python3.12/site-packages/torch/_tensor.py", line 623, in backward
+    torch.autograd.backward(
+  File "/Users/manavarya-intern/verdict/.venv/lib/python3.12/site-packages/torch/autograd/__init__.py", line 395, in backward
+    _engine_run_backward(
+  File "/Users/manavarya-intern/verdict/.venv/lib/python3.12/site-packages/torch/autograd/graph.py", line 1072, in _engine_run_backward
+    return Variable._execution_engine.run_backward(  # Calls into the C++ engine to run the backward pass
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+RuntimeError: MPS backend out of memory (MPS allocated: 10.12 GiB, other allocations: 14.30 MiB, max allowed: 10.66 GiB). Tried to allocate 736.00 MiB on shared pool. Use PYTORCH_MPS_HIGH_WATERMARK_RATIO=0.0 to disable upper limit for memory allocations (may cause system failure).
