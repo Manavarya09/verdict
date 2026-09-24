@@ -18,7 +18,7 @@ REGISTRY: dict[str, dict] = {
         "description": "multilingual-e5-small fine-tuned on the typed-decision mix (train/). 118M params, 100+ languages.",
         "hf": None,  # set when published to the Hub
         "url": "https://github.com/Manavarya09/verdict/releases/download/models-v0/verdict-small-v0.tar.gz",
-        "sha256": None,  # filled by train/package.py at release time
+        "sha256": "c1087405bdd54f8e14b3d44a4ddb1c6af686b8349e5ba43fb85ce968af580792",
         "base": "intfloat/multilingual-e5-small",
     },
 }
