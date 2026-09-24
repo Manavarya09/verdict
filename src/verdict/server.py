@@ -16,87 +16,12 @@ from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 
 from .core import Verdict
-from .types import Decision, Option, Question
-
-
-def render_state(state: Any) -> str:
-    """Structured state -> readable ``key: value`` lines (nested keys joined with dots).
-    Encoders read this far better than raw JSON braces and quotes. A string that parses as
-    a JSON object is rendered the same way."""
-    if state is None:
-        return ""
-    if isinstance(state, str):
-        st = state.strip()
-        if st.startswith("{") and st.endswith("}"):
-            import json
-
-            try:
-                return render_state(json.loads(st))
-            except Exception:
-                return state
-        return state
-    if isinstance(state, dict):
-        lines: list[str] = []
-
-        def walk(prefix: str, v: Any) -> None:
-            if isinstance(v, dict):
-                for k, x in v.items():
-                    walk(f"{prefix}.{k}" if prefix else str(k), x)
-            elif isinstance(v, list) and v and all(not isinstance(x, (dict, list)) for x in v):
-                lines.append(f"{prefix}: {', '.join(str(x) for x in v)}")
-            elif isinstance(v, list):
-                for i, x in enumerate(v):
-                    walk(f"{prefix}[{i}]", x)
-            else:
-                lines.append(f"{prefix}: {v}")
-
-        walk("", state)
-        return "\n".join(lines)
-    if isinstance(state, list):
-        return "\n".join(render_state(x) for x in state)
-    return str(state)
+from .jev import JevFormatError, jev_question_to_verdict, render_state  # noqa: F401  (re-exported)
+from .types import Decision
 
 
 def _state_text(state: Any) -> str:
     return render_state(state)
-
-
-def _instr(x: Any) -> str | None:
-    if x is None:
-        return None
-    if isinstance(x, str):
-        return x
-    import json
-
-    return json.dumps(x, ensure_ascii=False)
-
-
-def jev_question_to_verdict(q: dict) -> Question:
-    kind = q.get("type")
-    instr = _instr(q.get("instructions"))
-    crit = q.get("criteria")
-    if kind == "choice":
-        if isinstance(crit, list):
-            crit = {str(c): None for c in crit}
-        if not isinstance(crit, dict) or len(crit) < 2:
-            raise HTTPException(422, "choice.criteria must map >=2 labels to descriptions")
-        opts = [Option(label=str(k), description=_instr(v)) for k, v in crit.items()]
-        return Question(kind="choose", prompt=instr, options=opts)
-    if kind == "score":
-        if not isinstance(crit, list) or len(crit) < 2:
-            raise HTTPException(422, "score.criteria must be a list of >=2 level descriptions")
-        return Question(
-            kind="score",
-            prompt=instr,
-            scale=(0, len(crit) - 1),
-            rubric={i: _instr(c) or f"level {i}" for i, c in enumerate(crit)},
-        )
-    if kind == "noul":
-        claim = instr or "the statement holds"
-        if isinstance(crit, dict) and crit.get("true"):
-            claim = f"{claim} ({_instr(crit['true'])})"
-        return Question(kind="check", claim=claim)
-    raise HTTPException(422, f"unknown question type {kind!r}")
 
 
 class SystemOneRequest(BaseModel):
@@ -124,6 +49,12 @@ def build_app(model: str | None = None, reranker: str | None = None, deciders: l
     @app.get("/health")
     def health():
         return {"status": "ok", "engine": v.engine.name, "deciders": list(mounted)}
+
+    @app.exception_handler(JevFormatError)
+    async def _bad_question(_req, exc):  # type: ignore[no-untyped-def]
+        from fastapi.responses import JSONResponse
+
+        return JSONResponse(status_code=422, content={"detail": str(exc)})
 
     @app.post("/v1/systemone")
     def systemone(req: SystemOneRequest):
