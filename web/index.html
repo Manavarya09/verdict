@@ -153,19 +153,23 @@ blocking issue or hard deadline</textarea>
     <h2>Numbers, including the ones we lose</h2>
     <p class="sub">Every Verdict figure comes from <code>python -m bench.run</code> with a no-leakage protocol: heads on train minus a fixed calibration slice, calibration on that slice only, scores on the untouched test split. Banking77, SST-5 and ToxicChat are never in the training mix. Jev and Laya figures are from their own docs and third-party evals.</p>
     <div class="tablewrap"><table>
-      <thead><tr><th></th><th>Jev (closed)</th><th>Laya (open)</th><th>Verdict</th></tr></thead>
+      <thead><tr><th></th><th>Jev (closed)</th><th>Laya (open)</th><th>kev (open)</th><th>Verdict</th></tr></thead>
       <tbody>
-        <tr><td>Banking77, zero-shot</td><td>0.80-0.87</td><td>0.425</td><td class="win">0.594 · 0.650 with reranker</td></tr>
-        <tr><td>Banking77, 16 labels per class</td><td>not possible</td><td>hours on 2 GPUs</td><td class="win">0.860 in 0.9 s on a CPU</td></tr>
-        <tr><td>Banking77, full train</td><td>–</td><td>–</td><td class="win">0.920</td></tr>
-        <tr><td>CLINC150, 16 labels per class</td><td>0.87 (zero-shot)</td><td>–</td><td class="win">0.928</td></tr>
-        <tr><td>MASSIVE, Hindi input, English labels, full</td><td>English first</td><td>0.451 non-English mean</td><td class="win">0.863</td></tr>
-        <tr><td>ToxicChat, full train</td><td>–</td><td>0.755 acc</td><td class="win">AUROC 0.955</td></tr>
-        <tr><td>Calibration (ECE)</td><td>0.144-0.246</td><td>0.466 as shipped</td><td class="win">0.01-0.04</td></tr>
-        <tr><td>"I don't know"</td><td>opaque confidence</td><td>act head always 1.0</td><td class="win">conformal set, coverage guarantee</td></tr>
-        <tr><td>Max options</td><td>255</td><td>~20 before degrading</td><td class="win">unbounded</td></tr>
-        <tr><td>Latency</td><td>70-500 ms network</td><td>33 ms GPU · 329 ms+ CPU</td><td class="win">0.5 ms batched (M-series) · single-digit ms CPU</td></tr>
-        <tr><td>Where it is weak</td><td>>255 options, non-English, no fine-tune</td><td>zero-shot near chance, 512 ctx</td><td>zero-shot <code>score</code>/<code>check</code> with the bi-encoder alone (SST-5 0.27, ToxicChat AUROC 0.59)</td></tr>
+        <tr><td>Banking77, zero-shot</td><td>0.80-0.87</td><td>0.425</td><td>0.425</td><td class="win">0.594 base · 0.556 trained · 0.650 with reranker</td></tr>
+        <tr><td>Banking77, 16 labels per class</td><td>not possible</td><td>hours on 2 GPUs</td><td>GPU delta fine-tune</td><td class="win">0.860 in 0.9 s on a CPU</td></tr>
+        <tr><td>Banking77, full train</td><td>–</td><td>–</td><td>–</td><td class="win">0.920</td></tr>
+        <tr><td>CLINC150, 16 labels per class</td><td>0.87 (zero-shot)</td><td>–</td><td>–</td><td class="win">0.928</td></tr>
+        <tr><td>MASSIVE, Hindi input, English labels, full</td><td>English first</td><td>0.451 non-English mean</td><td>English only</td><td class="win">0.863</td></tr>
+        <tr><td>SST-5 zero-shot (score)</td><td>–</td><td>0.372</td><td>–</td><td class="win">0.403 trained</td></tr>
+        <tr><td>ToxicChat zero-shot (check)</td><td>–</td><td>0.755 acc</td><td>–</td><td class="win">AUROC 0.892 trained</td></tr>
+        <tr><td>typed-decisions (2,000 decisions)</td><td>0.727</td><td class="win">0.766 fine-tuned</td><td>not published</td><td>0.689 small fine-tuned · base model running</td></tr>
+        <tr><td>Calibration (ECE)</td><td>0.144-0.246</td><td>0.466 as shipped</td><td>"still a bit overconfident"</td><td class="win">0.01-0.03</td></tr>
+        <tr><td>"I don't know"</td><td>opaque confidence</td><td>act head always 1.0</td><td>confidence threshold</td><td class="win">conformal set, coverage guarantee</td></tr>
+        <tr><td>Option order changes the answer</td><td>yes</td><td>yes</td><td>yes (13.75 pp)</td><td class="win">never, by construction</td></tr>
+        <tr><td>Max options</td><td>255</td><td>~20 before degrading</td><td>collapses past ~20</td><td class="win">unbounded</td></tr>
+        <tr><td>Latency</td><td>70-500 ms network</td><td>33 ms GPU · 329 ms+ CPU</td><td>12-26 ms H100 · 780 ms M5</td><td class="win">0.5 ms batched (M-series) · 4 ms CPU int8</td></tr>
+        <tr><td>Wire format</td><td>/v1/systemone</td><td>/v1/systemone</td><td>/v1/systemone</td><td class="win">/v1/systemone + native + MCP</td></tr>
+        <tr><td>Where it is weak</td><td>>255 options, non-English, no fine-tune</td><td>zero-shot near chance, 512 ctx</td><td>overconfident, English, no world knowledge</td><td>typed-decisions fine-tuned (0.69 vs 0.77); Banking77 zero-shot vs Jev</td></tr>
       </tbody>
     </table></div>
     <p class="small" style="margin-top:10px">Full table with fit time and per-suite ECE: <a href="https://github.com/Manavarya09/verdict/blob/main/docs/BENCHMARKS.md">docs/BENCHMARKS.md</a>. Sources: <a href="https://github.com/Manavarya09/verdict/blob/main/docs/RESEARCH.md">docs/RESEARCH.md</a>.</p>
