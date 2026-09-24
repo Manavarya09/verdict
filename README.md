@@ -220,6 +220,10 @@ conformal threshold fit on that slice only; every number on the untouched test s
 | Verdict e5-small, full fine-tune with soft targets, 3 epochs | Laya's protocol | 0.689 (0.693 through the Verdict path, 52% automation at 0.81 accuracy when committed) |
 | Verdict e5-base (278M), full fine-tune, 3 epochs | Laya's protocol | 0.706 |
 
+On jevbench's public tiers (mostly knowledge and multi-hop items) verdict-small scores 0.94 / 0.49 / 0.40
+on easy / original / hard: routing and intent items are fine, reasoning items are not. Full table in
+[docs/BENCHMARKS.md](docs/BENCHMARKS.md).
+
 We are behind here and we know why. These states are JSON records, and the label depends on
 reading fields *together with* the options ("constraint_violations: 0" plus "harmful"). A
 bi-encoder scores each option against one vector of the state, by design: that is what buys
