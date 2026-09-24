@@ -16,7 +16,7 @@ import httpx
 REGISTRY: dict[str, dict] = {
     "verdict-small": {
         "description": "multilingual-e5-small fine-tuned on the typed-decision mix (train/). 118M params, 100+ languages.",
-        "hf": None,  # set when published to the Hub
+        "hf": "Manav2op/verdict-small",
         "url": "https://github.com/Manavarya09/verdict/releases/download/models-v0/verdict-small-v0.tar.gz",
         "sha256": "c1087405bdd54f8e14b3d44a4ddb1c6af686b8349e5ba43fb85ce968af580792",
         "base": "intfloat/multilingual-e5-small",

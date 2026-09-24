@@ -13,7 +13,7 @@ import numpy as np
 
 from .embed import EmbedEngine, _prefixes_for
 
-DEFAULT_ONNX_MODEL = "Xenova/multilingual-e5-small"
+DEFAULT_ONNX_MODEL = "Manav2op/verdict-small"
 
 
 class OnnxEmbedEngine(EmbedEngine):

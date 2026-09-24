@@ -37,12 +37,12 @@ export class LocalVerdict {
   private constructor(private extractor: Extractor, private opts: Required<LocalOptions>) {}
 
   static async load(opts: LocalOptions = {}): Promise<LocalVerdict> {
-    const model = opts.model ?? "Xenova/multilingual-e5-small";
+    const model = opts.model ?? "Manav2op/verdict-small";
     const modName = "@huggingface/transformers"; // resolved at runtime; optional peer dependency
     const tf: any = await import(/* @vite-ignore */ modName);
     const device = opts.device ?? (typeof navigator !== "undefined" && (navigator as any).gpu ? "webgpu" : "wasm");
     const extractor = (await tf.pipeline("feature-extraction", model, { dtype: opts.dtype ?? "q8", device })) as Extractor;
-    const isE5 = /e5/i.test(model);
+    const isE5 = /e5|verdict/i.test(model);
     return new LocalVerdict(extractor, {
       model, device, dtype: opts.dtype ?? "q8",
       queryPrefix: opts.queryPrefix ?? (isE5 ? "query: " : ""),

@@ -268,10 +268,12 @@ sentence-transformers model with `Verdict(model=...)`. Add an NLI cross-encoder 
 ## Install
 
 ```bash
-pip install verdictml            # import verdict
-pip install "verdictml[serve]"   # + HTTP server
-pip install "verdictml[bench]"   # + datasets for the benchmark suite
+pip install "verdictml @ git+https://github.com/Manavarya09/verdict"            # import verdict
+pip install "verdictml[serve,onnx,mcp] @ git+https://github.com/Manavarya09/verdict"   # + server, ONNX engine, MCP
+pip install "verdictml[bench] @ git+https://github.com/Manavarya09/verdict"     # + datasets for the benchmark suite
 ```
+
+PyPI release follows shortly; until then install from the repo.
 
 ## Roadmap
 
