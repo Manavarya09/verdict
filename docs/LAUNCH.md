@@ -4,7 +4,7 @@
 
 1. Trained encoder beats the e5-small baseline on all three held-out suites and the README
    table has a `verdict-small` row.
-2. `pip install verdictml` works from PyPI (needs a PyPI token; not done yet).
+2. `pip install verdictml` works from PyPI. Done 24 Sep (0.1.0).
 3. Playground at https://manavarya09.github.io/verdict/ loads the trained weights.
 4. CI green, `python -m bench.run all` reproduces every README number from a clean clone.
 
