@@ -1,0 +1,27 @@
+train decisions 6000  test decisions 2000  device mps
+The `tokenize` method is deprecated, please use `preprocess` instead.
+before: {'all': 0.3125, 'choose': 0.2317, 'check': 0.445, 'score': 0.2737}
+ep 0 step 50/1128 loss 1.0420 1.20s/step
+ep 0 step 100/1128 loss 0.9809 1.16s/step
+ep 0 step 150/1128 loss 1.1654 1.20s/step
+ep 0 step 200/1128 loss 0.9443 1.22s/step
+ep 0 step 250/1128 loss 1.0683 1.23s/step
+ep 0 step 300/1128 loss 1.0568 1.23s/step
+ep 0 step 350/1128 loss 0.8536 1.29s/step
+EVAL epoch 0: {"all": 0.6255, "choose": 0.65, "check": 0.705, "score": 0.5475}
+ep 1 step 400/1128 loss 0.8981 260.66s/step
+ep 1 step 450/1128 loss 1.1220 112.58s/step
+ep 1 step 500/1128 loss 1.0669 159.98s/step
+ep 1 step 550/1128 loss 0.9335 131.59s/step
+ep 1 step 600/1128 loss 0.7574 108.15s/step
+ep 1 step 650/1128 loss 0.9413 93.85s/step
+ep 1 step 700/1128 loss 1.0700 79.86s/step
+ep 1 step 750/1128 loss 0.9400 74.93s/step
+EVAL epoch 1: {"all": 0.6655, "choose": 0.6917, "check": 0.7667, "score": 0.57}
+ep 2 step 800/1128 loss 0.8062 35.05s/step
+ep 2 step 850/1128 loss 0.8417 19.02s/step
+ep 2 step 900/1128 loss 0.8178 21.77s/step
+ep 2 step 950/1128 loss 0.9543 28.55s/step
+ep 2 step 1000/1128 loss 0.9725 23.08s/step
+ep 2 step 1050/1128 loss 0.9428 19.44s/step
+ep 2 step 1100/1128 loss 1.1249 16.86s/step

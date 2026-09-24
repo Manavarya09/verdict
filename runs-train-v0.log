@@ -83,3 +83,8 @@ Repo card metadata block was not found. Setting CardData to empty.
 EVAL step 2000: {"banking77": 0.524, "sst5": 0.42, "toxic_chat": 0.8365, "mean": 0.5935}  <- best
 step 2050/8418 loss 0.6654 acc 0.748 lr 1.59e-05 1.55s/step eta 164m
 step 2100/8418 loss 0.7156 acc 0.724 lr 1.58e-05 1.53s/step eta 161m
+step 2150/8418 loss 0.6467 acc 0.771 lr 1.57e-05 1.52s/step eta 159m
+step 2200/8418 loss 0.8000 acc 0.711 lr 1.55e-05 1.51s/step eta 157m
+step 2250/8418 loss 0.6519 acc 0.743 lr 1.54e-05 9.73s/step eta 1000m
+/Users/manavarya-intern/.local/share/uv/python/cpython-3.12.13-macos-aarch64-none/lib/python3.12/multiprocessing/resource_tracker.py:279: UserWarning: resource_tracker: There appear to be 1 leaked semaphore objects to clean up at shutdown
+  warnings.warn('resource_tracker: There appear to be %d '

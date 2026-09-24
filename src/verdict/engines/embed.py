@@ -83,16 +83,16 @@ class EmbedEngine(Engine):
         """Cached per text (LRU), so asking several questions about one input costs one
         encoder pass. Long inputs are chunked, embedded, mean-pooled and re-normalised, so
         a 20-page document is one vector instead of a silently truncated one."""
-        out: list[np.ndarray | None] = [self._input_cache.get(t) for t in texts]
-        todo = [t for t, v in zip(texts, out) if v is None]
+        hits = {t: self._input_cache[t] for t in texts if t in self._input_cache}
+        todo = list(dict.fromkeys(t for t in texts if t not in hits))
+        fresh: dict[str, np.ndarray] = {}
         if todo:
-            fresh = self._embed_inputs_uncached(list(dict.fromkeys(todo)))
-            for t, v in zip(dict.fromkeys(todo), fresh):
+            fresh = dict(zip(todo, self._embed_inputs_uncached(todo)))
+            for t, v in fresh.items():  # evictions here can never touch this batch's answers
                 self._input_cache[t] = v
                 if len(self._input_cache) > self.input_cache_size:
                     self._input_cache.popitem(last=False)
-            out = [self._input_cache[t] if v is None else v for t, v in zip(texts, out)]
-        return np.stack(out)  # type: ignore[arg-type]
+        return np.stack([hits[t] if t in hits else fresh[t] for t in texts])
 
     def _embed_inputs_uncached(self, texts: list[str]) -> np.ndarray:
         chunked: list[str] = []

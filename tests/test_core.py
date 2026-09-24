@@ -84,3 +84,13 @@ def test_long_input_is_chunked_not_truncated(v):
     a = v.choose(filler + tail, {"billing": "refunds, invoices, charges", "facilities": "parking, office supplies"})
     assert len(v.engine._chunks(filler + tail)) > 1
     assert "billing" in a.ranked[:2]
+
+
+@pytest.mark.slow
+def test_input_cache_survives_batches_larger_than_cache(v):
+    v.engine.input_cache_size = 8
+    texts = [f"ticket number {i} about billing" for i in range(50)] + ["ticket number 0 about billing"]
+    X = v.engine.embed_inputs(texts)
+    assert X.shape[0] == 51
+    assert np.allclose(X[0], X[-1])
+    v.engine.input_cache_size = 4096
