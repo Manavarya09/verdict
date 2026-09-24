@@ -103,7 +103,7 @@ d("the courier lost my parcel").confidence.abstain                              
 
   <section id="demo">
     <h2>Live demo, no server</h2>
-    <p class="sub">The same 118M-parameter multilingual encoder as the Python package, running in your browser on WebGPU or WASM. Type in any language. Zero-shot probabilities here are uncalibrated; the package's <code>calibrate()</code> adds temperature scaling and the conformal abstain set.</p>
+    <p class="sub">The 118M-parameter multilingual base encoder, running in your browser on WebGPU or WASM. The Python package defaults to <code>verdict-small</code>, the trained checkpoint, which is markedly better on <code>check</code> and <code>score</code>. Type in any language. Zero-shot probabilities here are uncalibrated; the package's <code>calibrate()</code> adds temperature scaling and the conformal abstain set.</p>
     <div class="grid">
       <div class="card">
         <h3>Input</h3>

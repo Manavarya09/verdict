@@ -28,8 +28,10 @@ jobs:
       - uses: astral-sh/setup-uv@v3
       - uses: actions/cache@v4
         with:
-          path: ~/.cache/huggingface
-          key: hf-${{ runner.os }}-e5-small
+          path: |
+            ~/.cache/huggingface
+            ~/.cache/verdict
+          key: models-${{ runner.os }}-verdict-small-v0
       - name: install
         run: |
           uv venv --python 3.12
