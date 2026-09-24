@@ -25,3 +25,5 @@ ep 2 step 950/1128 loss 0.9543 28.55s/step
 ep 2 step 1000/1128 loss 0.9725 23.08s/step
 ep 2 step 1050/1128 loss 0.9428 19.44s/step
 ep 2 step 1100/1128 loss 1.1249 16.86s/step
+EVAL epoch 2: {"all": 0.689, "choose": 0.7017, "check": 0.7667, "score": 0.6212}
+done. best typed-decisions accuracy 0.689

@@ -1,3 +1,0 @@
-train decisions 6000  test decisions 2000  device mps
-The `tokenize` method is deprecated, please use `preprocess` instead.
-before: {'all': 0.3465, 'choose': 0.2783, 'check': 0.4517, 'score': 0.3187}

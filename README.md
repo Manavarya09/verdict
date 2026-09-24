@@ -197,11 +197,12 @@ conformal threshold fit on that slice only; every number on the untouched test s
 | Verdict e5-small | zero-shot, raw JSON state | 0.323 |
 | Verdict step-1,000 checkpoint | zero-shot, raw JSON state | 0.386 |
 | Verdict e5-small + heads | fitted on the train split, raw JSON state | 0.625 |
-| Verdict, full fine-tune with soft targets, `key: value` state rendering | Laya's protocol | _running_ |
+| Verdict e5-small, full fine-tune with soft targets, 3 epochs | Laya's protocol | 0.689 (0.693 through the Verdict path, 52% automation at 0.81 accuracy when committed) |
+| Verdict e5-large (560M, size-matched to Laya), full fine-tune, 4 epochs | Laya's protocol | _running_ |
 
 We are behind here today. Frozen embeddings of raw JSON lose the fields that decide these
-labels; the two fixes (readable state rendering, full-encoder fine-tune on the split) are in
-`train/finetune_typed.py` and the row updates when the run finishes.
+labels, and a 118M encoder at 3 epochs lands at 0.69. `train/finetune_typed.py` is the run;
+the size-matched row updates when it finishes.
 
 Reference points from published evals: Jev zero-shot Banking77 0.80-0.87, CLINC150 0.87;
 Laya Banking77 0.425, SST-5 0.372, MASSIVE non-English mean 0.451, ToxicChat 0.755.
