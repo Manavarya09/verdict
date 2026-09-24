@@ -5,6 +5,7 @@
   <a href="https://github.com/Manavarya09/verdict/blob/main/LICENSE"><img src="https://img.shields.io/badge/license-Apache--2.0-blue.svg" alt="license"></a>
   <a href="https://pypi.org/project/verdictml/"><img src="https://img.shields.io/pypi/v/verdictml.svg" alt="pypi"></a>
   <a href="https://manavarya09.github.io/verdict/"><img src="https://img.shields.io/badge/demo-runs%20in%20your%20browser-6ee7c8" alt="demo"></a>
+  <a href="https://huggingface.co/spaces/Manav2op/verdict"><img src="https://img.shields.io/badge/%F0%9F%A4%97%20Space-playground-yellow" alt="HF Space"></a>
   <a href="https://colab.research.google.com/github/Manavarya09/verdict/blob/main/examples/verdict_quickstart.ipynb"><img src="https://colab.research.google.com/assets/colab-badge.svg" alt="Open in Colab"></a>
 </p>
 
