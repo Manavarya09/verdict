@@ -68,6 +68,10 @@ def massive_hi(n_test: int = 0):
     return massive("hi", n_test)
 
 
+def massive_it(n_test: int = 0):
+    return massive("it", n_test)
+
+
 def sst5(n_test: int = 0):
     from datasets import load_dataset
 
@@ -106,6 +110,7 @@ SUITES = {
     "clinc150": clinc150,
     "massive": massive,
     "massive_hi": massive_hi,
+    "massive_it": massive_it,
     "sst5": sst5,
     "toxic_chat": toxic_chat,
 }

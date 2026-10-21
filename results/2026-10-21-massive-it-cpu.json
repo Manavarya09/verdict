@@ -1,0 +1,34 @@
+[
+  {
+    "suite": "massive_it",
+    "shots": 0,
+    "engine": "embed:multilingual-e5-small",
+    "fit_s": 0.0,
+    "ms_per_example": 27.56,
+    "n": 1000,
+    "accuracy": 0.382,
+    "ece": 0.04978099429102476,
+    "calibrated": true,
+    "coverage_target": 0.9,
+    "coverage_observed": 0.94,
+    "automation_rate": 0.012,
+    "accuracy_when_committed": 0.8333333333333334,
+    "mean_set_size": 17.243
+  },
+  {
+    "suite": "massive_it",
+    "shots": 16,
+    "engine": "embed:multilingual-e5-small",
+    "fit_s": 34.51,
+    "ms_per_example": 0.07,
+    "n": 1000,
+    "accuracy": 0.742,
+    "ece": 0.0413133333772736,
+    "calibrated": true,
+    "coverage_target": 0.9,
+    "coverage_observed": 0.921,
+    "automation_rate": 0.379,
+    "accuracy_when_committed": 0.9762532981530343,
+    "mean_set_size": 2.739
+  }
+]
